@@ -8,6 +8,10 @@ import java.util.stream.StreamSupport;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -44,6 +48,25 @@ public class IndexController {
 		mangaRepository.findAll().forEach(data::add);
 		return data;
 	}
+	
+	@RequestMapping(value="/pmangas",
+			method=RequestMethod.GET,
+			produces=MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public Page<Manga> listePManga(@PageableDefault(page=0, size=5) Pageable page) {
+		return mangaRepository.findAll(page);
+	}
+	
+	@RequestMapping(value="/pmangas/search/{search:.+}",
+			method=RequestMethod.GET,
+			produces=MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public Page<Manga> searchPManga(@PathVariable("search") String search,
+									@PageableDefault(page=0, size=5) Pageable page) {
+		return mangaRepository.findByTitreContaining(search, page);
+	}
+	
+	
 	
 	@RequestMapping(value="/mangas/search/{search:.+}",
 			method=RequestMethod.GET,
