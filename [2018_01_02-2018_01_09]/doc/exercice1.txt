@@ -1,0 +1,39 @@
+exercice
+---------------
+todoliste
+
+
+tache 
+-----
+id
+libelle
+description
+priorite (int)
+dateCreation (LocalDate)
+dateLimite(LocalDate)
+contexte : (maison, bureau, etc...)
+termine:  boolean
+
+
+A)faire api rest crud pour todoliste (collection de tache)
+B) faire l'application front angular permettant d'acceder
+a cette todoliste (CRUD)
+
+bonus:
+C) chercher une tache par libelle
+D) filtrer les taches par priorite > valeur
+E) filtrer les taches par dateLimite (du avant une date choisie)
+
+						
+https://docs.spring.io/spring-data/jpa/docs/1.5.0.RELEASE/reference/html/jpa.repositories.html
+
+SUITE
+----------------------------------------------------
+- ajout pagination et filtrage/recherche associé
+- validation saisie d'une tache
+	libelle 3-100 caracteres
+	priorité 0-9
+	contexte requis
+bonus
+	dateLimite ne peut être avant la dateCreation
+

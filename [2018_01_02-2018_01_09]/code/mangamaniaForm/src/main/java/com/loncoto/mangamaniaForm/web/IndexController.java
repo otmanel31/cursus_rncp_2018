@@ -10,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -131,6 +132,10 @@ public class IndexController {
 		if (m == null)
 			throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "manga inconnu");
 		mangaRepository.delete(m);
+		
+		//PageRequest pr = new PageRequest(0, 10);
+		//PageImpl<Manga> pi = new PageImpl<>(null,pr);
+		
 		return m;
 	}
 

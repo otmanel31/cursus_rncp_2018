@@ -38,7 +38,7 @@ export class EditMangaComponent implements OnInit {
     console.log("sauvegarde tache.... : ");
     console.log("valide ? " + monform.valid);
     console.log("dirty ? " + monform.dirty);
-
+    
     console.log(this.editedManga);
     this.mangaRepository.saveManga(this.editedManga)
                         .then(m => {
