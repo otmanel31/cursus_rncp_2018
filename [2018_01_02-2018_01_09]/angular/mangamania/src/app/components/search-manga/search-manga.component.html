@@ -1,11 +1,33 @@
-<form>
-  <div class="form-group">
-    <label for="searchTerm">search title: {{searchTerm}}</label>
-    <input type="text"
-          class="form-control"
-           name="searchTerm"
-            id="searchTerm"
-            [ngModel]="searchTerm"
-            (ngModelChange)="changeTerm($event)" />
+<div class="row">
+  <div class="col-sm-6 col-md-6 col-lg-6">
+      <form>
+          <div class="input-group">
+            <span class="input-group-addon" id="search-addon">search</span>
+            <input type="text"
+                  class="form-control"
+                   name="searchTerm"
+                    id="searchTerm"
+                    aria-describedby="search-addon"
+                    [ngModel]="searchTerm"
+                    (ngModelChange)="changeTerm($event)" />
+          </div>
+      </form>        
   </div>
-</form>
+  <div class="col-sm-4 col-md-4 col-lg-4">
+      <div class="btn-group" dropdown>
+          <button dropdownToggle type="button" class="btn btn-primary dropdown-toggle">
+            rating minimum
+            <span *ngIf="currentRating > 0"> {{currentRating}}</span>
+            <span class="caret"></span>
+          </button>
+          <ul *dropdownMenu class="dropdown-menu" role="menu">
+            <li *ngFor="let rating of ratingRange" role="menuitem"><a class="dropdown-item"
+                                                                      href=""
+                                                                      (click)="setRatingMin(rating)" >{{rating}}</a></li>
+          </ul>
+        </div>
+  </div>
+  <div class="col-sm-2 col-md-2 col-lg-2">
+    <button class="btn btn-warning" (click)="setRatingMin(0)">reset filter</button>
+  </div>
+</div>

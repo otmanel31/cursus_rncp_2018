@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from "@angular/router";
 import { Manga } from '../../metier/manga';
 import { MangaRepositoryService } from '../../services/manga-repository.service';
+import { NgForm } from '@angular/forms';
 
 
 @Component({
@@ -20,7 +21,7 @@ export class EditMangaComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.editedManga = new Manga(0, "ubunchu!", "linus", new Date(), "informatique", 5);
+    this.editedManga = new Manga(0, "", "linus", new Date(), "informatique", 5);
     this.activeRoute.params.subscribe(params => {
       // le parametre ":id" dans la route est disponnible dans
       // le tableau params
@@ -33,8 +34,11 @@ export class EditMangaComponent implements OnInit {
     });
   }
 
-  sauverTache() : void {
+  sauverTache(monform: NgForm) : void {
     console.log("sauvegarde tache.... : ");
+    console.log("valide ? " + monform.valid);
+    console.log("dirty ? " + monform.dirty);
+
     console.log(this.editedManga);
     this.mangaRepository.saveManga(this.editedManga)
                         .then(m => {

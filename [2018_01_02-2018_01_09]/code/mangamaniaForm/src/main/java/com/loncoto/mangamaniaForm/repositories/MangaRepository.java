@@ -12,4 +12,7 @@ public interface MangaRepository extends PagingAndSortingRepository<Manga, Integ
 {
 	List<Manga> findByTitreContaining(String titre);
 	Page<Manga> findByTitreContaining(String titre, Pageable page);
+	
+	Page<Manga> findByRatingGreaterThanEqual(int rating, Pageable page);
+	Page<Manga> findByTitreContainingAndRatingGreaterThanEqual(String titre, int rating, Pageable page);
 }
