@@ -19,7 +19,7 @@ public class Image extends Content {
 											private int height;
 	@Column(length=60) 						private String filehash;
 	@Column(length=60) 						private String storageId;
-	
+	@Column(length=60) 						private String thumbStorageId;
 
 	public Image(long id,
 				String name,
@@ -31,7 +31,8 @@ public class Image extends Content {
 				int width,
 				int height,
 				String filehash,
-				String storageId) {
+				String storageId,
+				String thumbStorageId) {
 		super(id, name, description, dateAdded);
 		this.fileName = fileName;
 		this.contentType = contentType;
@@ -40,6 +41,7 @@ public class Image extends Content {
 		this.height = height;
 		this.filehash = filehash;
 		this.storageId = storageId;
+		this.thumbStorageId = thumbStorageId;
 	}
 	
 }
