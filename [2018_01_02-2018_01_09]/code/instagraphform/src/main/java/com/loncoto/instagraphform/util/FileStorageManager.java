@@ -80,4 +80,24 @@ public class FileStorageManager {
 			return Optional.empty();
 	}
 	
+	public boolean deleteImageFile(String storageId) {
+		// si on a pas un storageRoot correctment accessible, on arrete les frais
+		if (storageRoot == null || !storageRoot.exists() || !storageRoot.isDirectory()) {
+			return false;
+		}
+		// on recupere un objet File sur le répertoire ou on stocke l'image
+		File rep = Paths.get(storageRoot.getAbsolutePath(), storageId.substring(0, 2)).toFile();
+		// s'il n'existe pas, pas d'image
+		if (!rep.exists() || !rep.isDirectory()) {
+			return false;
+		}
+		File f = Paths.get(rep.getAbsolutePath(), storageId).toFile();
+		if (f != null && f.exists() && f.isFile()) {
+			// effacement du fichier
+			return f.delete();
+		}
+		else
+			return false;
+	}
+	
 }

@@ -1,0 +1,28 @@
+A)
+mangamania
+	-> transformation en projet spring boot
+	-> ajout d'une image pour la couverture d'un manga
+	uploadable via le site
+	-> bonus, apparition de l'image couverture lors du survol
+	du manga (indice -> popover de ngx-bootstrap)
+
+B)
+ajouter la gestion des tags a instagraph
+	-> zone liste des tags, une liste paginée de tous
+	les tags, avec un champ de recherche pour chercher
+	les tags qui nous intéressent
+	-> quand on clique sur un tag dans cette liste,
+	il passe dans la zone des tag selectionnés et la liste
+	des images se rafraichis avec filtrage par ce tag
+	-> si je clique sur un tag selectionné en haut, il est
+	retiré du filtrage
+	
+avancé
+	flitrage par plusieurs tags
+avancé++
+	flitrage par plusieurs tags et par tag négatif
+
+avancé+++
+	edition image, le même composant permet d'ajouter/retirer
+	des tag sur l'image
+	

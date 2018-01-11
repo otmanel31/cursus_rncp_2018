@@ -6,6 +6,7 @@ import { Page } from "../models/page";
 
 import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { Promise } from 'q';
 
 @Injectable()
 export class ImageRepositoryService {
@@ -41,6 +42,21 @@ export class ImageRepositoryService {
                                  {params: urlparams})
               .toPromise()
               .then( p => this.imagesSubject.next(p));
+   }
+
+   public deleteImages(ids : number[]) : void {
+     // [4,6,8] -> "4,6,8"
+      let ids_string = ids.join(",");
+      let urlparams : HttpParams = new HttpParams();
+      urlparams = urlparams.set("imagesId", ids_string);
+      // appeler delete sur le serveur avec les ids
+      this._http.delete<Map<string, number>>(`${this.baseUrlExtendedApi}/delete`,
+                                            {params : urlparams})
+                .toPromise()
+                .then( result => {
+                  console.log(result);
+                  this.refreshListe();
+                });
    }
 
    public getImageThumbUrl(id: number) : string {

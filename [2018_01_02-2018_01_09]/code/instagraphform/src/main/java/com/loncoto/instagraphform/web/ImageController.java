@@ -5,8 +5,12 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.LogManager;
@@ -134,6 +138,29 @@ public class ImageController {
 		return imageRepository.findAll(page);
 	}
 	
-	
+	@CrossOrigin(origins="http://localhost:4200")
+	@RequestMapping(value="/delete",
+					method=RequestMethod.DELETE,
+					produces=MediaType.APPLICATION_JSON_VALUE)	
+	@ResponseBody
+	public Map<String, Object> deleteImages(@RequestParam("imagesId") List<Long> imagesId) {
+		Map<String, Object> result = new HashMap<>();
+		Iterable<Image> images = imageRepository.findAll(imagesId);
+		// efface les images dans la base de donnée
+		imageRepository.delete(images);
+		
+		int nbImageToDelete = 0;
+		int nbFilesDeleted = 0;
+		// efface les fichiers images correspondants
+		for (Image img : images) {
+			nbImageToDelete++;
+			if (imageRepository.deleteImageFile(img))
+				nbFilesDeleted++;
+		}
+		// retrouner les informations sur ce qui a été fait
+		result.put("nbImagesDeleted", nbImageToDelete);
+		result.put("nbFilesDeleted", nbFilesDeleted);
+		return result;
+	}
 	
 }

@@ -20,9 +20,12 @@
       "prefix": "app",
       "styles": [
         "../node_modules/bootstrap/dist/css/bootstrap.min.css",
+        "../node_modules/angular2-lightbox/lightbox.css",
         "styles.css"
       ],
-      "scripts": [],
+      "scripts": [
+          
+      ],
       "environmentSource": "environments/environment.ts",
       "environments": {
         "dev": "environments/environment.ts",

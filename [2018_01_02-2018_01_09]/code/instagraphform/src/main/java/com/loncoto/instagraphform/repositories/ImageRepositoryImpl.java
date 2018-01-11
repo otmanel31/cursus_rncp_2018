@@ -63,6 +63,16 @@ public class ImageRepositoryImpl implements ImageRepositoryCustom {
 	public Optional<File> getImageFile(String storageId) {
 		return fileStorageManager.getImageFile(storageId);
 	}
+
+	@Override
+	public boolean deleteImageFile(Image image) {
+		if (image == null)
+			return false;
+		boolean successA = fileStorageManager.deleteImageFile(image.getStorageId());
+		boolean successB = fileStorageManager.deleteImageFile(image.getThumbStorageId());
+		return successA && successB;
+	}
+	
 	
 	
 
