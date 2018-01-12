@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -35,6 +36,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.loncoto.instagraphform.metier.Image;
+import com.loncoto.instagraphform.metier.projections.ImageWithTags;
 import com.loncoto.instagraphform.repositories.ImageRepository;
 import com.loncoto.instagraphform.util.FileStorageManager;
 
@@ -44,8 +46,50 @@ public class ImageController {
 	
 	private static Logger log = LogManager.getLogger(ImageController.class);
 
+	private final ProjectionFactory projectionFactory;
+	
+	// injection de la ProjectionFactory via notre constructeur
+	@Autowired
+	public ImageController(ProjectionFactory projectionFactory) {
+		this.projectionFactory = projectionFactory;
+	}
+	
 	@Autowired
 	private ImageRepository imageRepository;
+	
+	@CrossOrigin(origins="http://localhost:4200")
+	@RequestMapping(value="/findbytag",
+					method=RequestMethod.GET,
+					produces=MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public Page<Image> findByTags(
+			@RequestParam("tagsId") Optional<List<Integer>> tagsId,
+			@PageableDefault(page=0, size=12) Pageable page) {
+		if (tagsId.isPresent())
+			log.info("tagsId = " + tagsId.get().toString());
+		else
+			log.info("pas de tags en parametre");
+		return imageRepository.findAll(page);
+	}
+	
+	@CrossOrigin(origins="http://localhost:4200")
+	@RequestMapping(value="/findbytagfull",
+					method=RequestMethod.GET,
+					produces=MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public Page<ImageWithTags> findByTagsFull(
+			@RequestParam("tagsId") Optional<List<Integer>> tagsId,
+			@PageableDefault(page=0, size=12) Pageable page) {
+		if (tagsId.isPresent())
+			log.info("tagsId = " + tagsId.get().toString());
+		else
+			log.info("pas de tags en parametre");
+		return imageRepository
+					.findAll(page)
+					.map(img -> projectionFactory.createProjection(ImageWithTags.class, img));
+	}
+	
+	
 	
 	@CrossOrigin(origins="http://localhost:4200")
 	@RequestMapping(value="/upload",
@@ -124,19 +168,6 @@ public class ImageController {
 		return re;
 	}
 
-	@CrossOrigin(origins="http://localhost:4200")
-	@RequestMapping(value="/findbytag",
-					method=RequestMethod.GET,
-					produces=MediaType.APPLICATION_JSON_VALUE)
-	@ResponseBody
-	public Page<Image> findByTags(@RequestParam("tagsId") Optional<List<Integer>> tagsId,
-								  @PageableDefault(page=0, size=12) Pageable page) {
-		if (tagsId.isPresent())
-			log.info("tagsId = " + tagsId.get().toString());
-		else
-			log.info("pas de tags en parametre");
-		return imageRepository.findAll(page);
-	}
 	
 	@CrossOrigin(origins="http://localhost:4200")
 	@RequestMapping(value="/delete",

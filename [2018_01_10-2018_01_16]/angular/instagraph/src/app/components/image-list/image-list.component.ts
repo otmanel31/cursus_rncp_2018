@@ -40,6 +40,14 @@ export class ImageListComponent implements OnInit, OnDestroy {
   public getImageUrl(id: number) : string {
     return this.imageRepository.getImageUrl(id);
   }
+  public getImagePopovertext(image : Image) : string {
+    if( image.tags == null || image.tags.length == 0) {
+      return "aucun tags";
+    }
+    else {
+      return "tags: " + image.tags.map(t => t.libelle).join(",");
+    }
+  }
 
   public pageChanged(event : any) : void {
     this.imageRepository.setNoPage(event.page - 1);

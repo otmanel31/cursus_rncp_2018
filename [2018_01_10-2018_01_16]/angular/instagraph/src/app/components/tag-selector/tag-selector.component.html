@@ -1,3 +1,19 @@
-<p>
-  tag-selector works!
-</p>
+<div class="panel panel-primary">
+    <div class="panel-heading">tags choisis</div>
+    <div class="panel-body">
+      todo....
+    </div>
+</div>
+<div class="panel panel-primary">
+    <div class="panel-heading">tous les tags</div>
+    <div class="panel-body">
+   
+     <li *ngFor="let tag of tagSubject | async"
+        class="btn-group btn-group-xs btn-group-justified" role="group">
+       <a type="button" class="btn btn-default btn-group">{{tag.libelle | truncate: 10}}</a>
+       <a type="button" style="width: .20%;" class="btn btn-default btn-group">
+         <span class="glyphicon glyphicon-arrow-up"></span>
+       </a>
+     </li>
+    </div>
+</div>

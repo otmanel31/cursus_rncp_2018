@@ -1,0 +1,33 @@
+Les projections
+----------------
+
+@JsonIgnore permet d'exclure des champs de la serialisation
+Json. très pratique pour ne pas renvoyer des données sensibles
+ou inutiles.
+
+Cependant, le problême de jsonIgnore est son manque de flexibilité
+On ne peut activer/désactiver le jsonIgnore
+
+pour un traitement plus fin, 2 solutions on étét introduites
+dans spring
+	A) JsonView
+	B) les Projections
+
+les projection sont préféreables a l'heure actuelle
+car c'est le mécanisme "natif" utilisé par spring data rest
+
+Une projection c'est tout simplement une interface
+qui sert de "masque" au données a renvoyer
+
+Utilisateur
+	login
+	password
+	
+UtilisateurProjection
+	getLogin()
+	
+si on utilise cette projection, pas de password
+les projections peuvent "overrider" JsonIgnore
+
+
+

@@ -21,8 +21,11 @@
           <div *ngFor="let image of images | async" class="col-xs-3 col-sm-3 col-md-3">
               <div class="thumbnail" style="height: 300px">
 
+                <ng-template #popTemplate>{{getImagePopovertext(image)}}</ng-template>
                 <img [src]="getImageThumbUrl(image.id)" alt="{{image.fileName}}" 
-                    (click)="openGallerie(image)"/>
+                    (click)="openGallerie(image)"
+                    [popover]="popTemplate"
+                    triggers="mouseenter:mouseleave"/>
 
                 <div class="caption">
                   <h5> {{image.fileName | truncate : 12 : '&hellip;' }}</h5>

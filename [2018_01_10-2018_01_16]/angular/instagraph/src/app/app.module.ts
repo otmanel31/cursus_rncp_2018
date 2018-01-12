@@ -8,6 +8,7 @@ import { PaginationModule } from 'ngx-bootstrap/pagination';
 import { FileUploadModule } from "ng2-file-upload";
 import { ProgressbarModule } from 'ngx-bootstrap/progressbar';
 import { ModalModule } from 'ngx-bootstrap/modal';
+import { PopoverModule } from "ngx-bootstrap/popover";
 
 import { LightboxModule } from 'angular2-lightbox';
 
@@ -19,6 +20,7 @@ import { ImageRepositoryService } from './services/image-repository.service';
 import { ImageUploadComponent } from './components/image-upload/image-upload.component';
 import { NgStringPipesModule } from "angular-pipes";
 import { NgMathPipesModule } from "angular-pipes";
+import { TagRepositoryService } from './services/tag-repository.service';
 
 
 @NgModule({
@@ -40,13 +42,14 @@ import { NgMathPipesModule } from "angular-pipes";
     PaginationModule.forRoot(),
     ProgressbarModule.forRoot(),
     ModalModule.forRoot(),
+    PopoverModule.forRoot(),
     RouterModule.forRoot([
       { path: 'liste', component: ImageListComponent},
       { path: 'upload', component: ImageUploadComponent},
       { path: '', redirectTo: '/liste', pathMatch: 'full'}
     ])
   ],
-  providers: [ImageRepositoryService],
+  providers: [ImageRepositoryService, TagRepositoryService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

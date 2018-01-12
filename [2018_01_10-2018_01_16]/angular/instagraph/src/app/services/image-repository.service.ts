@@ -6,7 +6,7 @@ import { Page } from "../models/page";
 
 import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { Promise } from 'q';
+
 
 @Injectable()
 export class ImageRepositoryService {
@@ -38,7 +38,7 @@ export class ImageRepositoryService {
     let urlparams : HttpParams = new HttpParams();
     urlparams = urlparams.set("page", "" + this.noPage);
 
-    this._http.get<Page<Image>>(`${this.baseUrlExtendedApi}/findbytag`,
+    this._http.get<Page<Image>>(`${this.baseUrlExtendedApi}/findbytagfull`,
                                  {params: urlparams})
               .toPromise()
               .then( p => this.imagesSubject.next(p));

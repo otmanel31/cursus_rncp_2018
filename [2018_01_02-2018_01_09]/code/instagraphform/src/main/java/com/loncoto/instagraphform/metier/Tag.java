@@ -10,6 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,7 +23,7 @@ public class Tag {
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY) 	private int id;
 	@Column(length=100) 									private String libelle;
 															private String description;
-	@ManyToMany(mappedBy="tags")							private Set<Content> contents;
+	@ManyToMany(mappedBy="tags") @JsonIgnore				private Set<Content> contents;
 															
 	public Set<Content> getContents() {
 		if (contents == null)
