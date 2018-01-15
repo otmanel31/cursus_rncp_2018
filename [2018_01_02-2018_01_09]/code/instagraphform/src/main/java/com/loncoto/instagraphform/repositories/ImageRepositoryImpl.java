@@ -7,11 +7,20 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Optional;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.loncoto.instagraphform.metier.Image;
 import com.loncoto.instagraphform.util.FileStorageManager;
@@ -72,6 +81,53 @@ public class ImageRepositoryImpl implements ImageRepositoryCustom {
 		boolean successB = fileStorageManager.deleteImageFile(image.getThumbStorageId());
 		return successA && successB;
 	}
+
+	@PersistenceContext
+	private EntityManager em;
+	
+	/*
+	 * 
+	 * Methode de recherche
+	 * 
+	 */
+	
+	@Override
+	@Transactional(readOnly=true)
+	public Page<Image> searchWithTags(List<Integer> includedTags,
+									  List<Integer> excludeTags,
+									  Pageable pageRequest) {
+		StringBuilder sb = new StringBuilder("from Image as img");
+		if (!includedTags.isEmpty()) {
+			StringBuilder sbJoin = new StringBuilder();
+			StringBuilder sbWhere = new StringBuilder(" WHERE ");
+			for (int position = 1; position <= includedTags.size(); position++) {
+				sbJoin.append(", IN(img.tags) ta" + position); // ",IN(img.tags) ta1 ..."
+				//sbJoin.append(" JOIN img.tags as ta" + position); // ",IN(img.tags) ta1 ..."
+				if (position > 1)
+					sbWhere.append(" AND ");
+				sbWhere.append("ta"+ position).append(".id=:tincid" + position);
+			}
+			sb.append(sbJoin);
+			sb.append(sbWhere);
+		}
+		log.info("requette générée : " + sb.toString());
+		// creation de la requette
+		TypedQuery<Image> query = em.createQuery("select img " + sb.toString(), Image.class);
+		TypedQuery<Long> countQuery = em.createQuery("select count(img) " + sb.toString(), Long.class);
+		// passage des parametres à la requette
+		for (int position = 1; position <= includedTags.size(); position++ ) {
+			query.setParameter("tincid" + position, includedTags.get(position - 1));
+			countQuery.setParameter("tincid" + position, includedTags.get(position - 1));
+		}
+		
+		// pagination de la requette
+		query.setFirstResult(pageRequest.getOffset()); // postion de demarrage de la requette 
+		query.setMaxResults(pageRequest.getPageSize());  // combien d'image renvoyer
+		
+		// retourne la page
+		return new PageImpl<>(query.getResultList(),pageRequest, countQuery.getSingleResult());
+	}
+	
 	
 	
 	

@@ -80,13 +80,18 @@ public class ImageController {
 	public Page<ImageWithTags> findByTagsFull(
 			@RequestParam("tagsId") Optional<List<Integer>> tagsId,
 			@PageableDefault(page=0, size=12) Pageable page) {
-		if (tagsId.isPresent())
+		if (tagsId.isPresent()) {
 			log.info("tagsId = " + tagsId.get().toString());
-		else
+			return imageRepository
+						.searchWithTags(tagsId.get(), null, page)
+						.map(img -> projectionFactory.createProjection(ImageWithTags.class, img));
+		}
+		else {
 			log.info("pas de tags en parametre");
-		return imageRepository
-					.findAll(page)
-					.map(img -> projectionFactory.createProjection(ImageWithTags.class, img));
+			return imageRepository
+						.findAll(page)
+						.map(img -> projectionFactory.createProjection(ImageWithTags.class, img));
+		}
 	}
 	
 	
