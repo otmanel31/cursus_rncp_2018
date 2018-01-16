@@ -1,0 +1,42 @@
+hashage et salage de mot de passe
+
+ne jamais stocker le mot de passe en clair dans la bdd
+
+-> hashage via algorithme 
+	(md5(non),
+	sha1(mouubof),
+	sha256/bcrypt(ok))
+
+	chaine source -> version hashé
+	meme chaine -> meme valeur de hashage
+	
+	non reversible
+	
+	il est facile, si l'on a un dictionnaire de hash,
+	de rapidement tester touts les mots de passe commun
+	(rainbow table)
+	-> salage :
+		rajouter un "assaisonnement", autrement dit des données
+		supplémentaires au mot de passe avant hashage
+	-> bof/non
+		->	salt fixe (random tire initialement)
+		evite les rainbow table mais, 2 utilisateurs avec
+		le même mot de passe sur le meme site -> meme hash
+		on peut, statistiquement, détecter les mots de passe
+		"facile/commun" car beaucoup d'occurence du meme hash dans
+		la base
+		-> salt dynamique, tiré aleatoirement pour chaque compte
+			(algorythme bcrypt utilise cela)
+			
+			bcrybt ( mp + salt(random) -> hash)
+				-> "algo(version plus force)#salt#hash"
+		
+bcrypt est l'algo par defaut préconisé par spring
+		
+		
+		
+		
+		
+			
+		
+	

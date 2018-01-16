@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.boot.autoconfigure.security.oauth2.resource.AuthoritiesExtractor;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -68,5 +69,14 @@ public class IndexController {
 		return result;
 	}
 	
+	@PreAuthorize("hasRole('ROLE_VISITOR')")
+	@RequestMapping(value="/toto", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public Map<String, Object> toto() {
+		Map<String, Object> result = new HashMap<>();
+		result.put("message", "vous etes sur la page toto");
+		result.put("date", new Date());
+		return result;
+	}
 	
 }

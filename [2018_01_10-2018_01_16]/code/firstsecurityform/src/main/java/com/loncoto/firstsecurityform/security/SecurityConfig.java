@@ -1,19 +1,33 @@
 package com.loncoto.firstsecurityform.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.encoding.PlaintextPasswordEncoder;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled=true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private MyUserDetailsService userDetailsService;
+	
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		if (myPasswordEncoder == null)
+			myPasswordEncoder = new BCryptPasswordEncoder(); 
+		return myPasswordEncoder;
+	}
+	
+	private PasswordEncoder myPasswordEncoder;
 	
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -39,7 +53,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		// fournir notre propre service de récupération des utilisateurs/roles
 		
 		auth.userDetailsService(userDetailsService)
-			.passwordEncoder(new PlaintextPasswordEncoder()); // ATTENTION, A NE PAS FAIRE EN VRAIS
+			.passwordEncoder(passwordEncoder());
 		
 	}
 
