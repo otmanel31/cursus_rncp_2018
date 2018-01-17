@@ -1,0 +1,21 @@
+<div class="well">
+    <form (ngSubmit)="trylogin()">
+      <div class="form-group">
+        <label for="username">login name</label>
+        <input type="text"
+               class="form-control"
+               name="username"
+               id="username"
+               [(ngModel)]="userlogin.username" />
+      </div>
+      <div class="form-group">
+          <label for="password">password</label>
+          <input type="password"
+                 class="form-control"
+                 name="password"
+                 id="password"
+                 [(ngModel)]="userlogin.password" />
+        </div>
+      <button class="btn btn-success" type="submit">log me in!</button>
+  </form>
+</div>

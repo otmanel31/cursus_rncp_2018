@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,6 +34,7 @@ public class TagController {
 					method=RequestMethod.GET,
 					produces=MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
+	@PreAuthorize("hasRole('ROLE_USER')")
 	public Page<Tag> findAll(@PageableDefault(page=0, size=15) Pageable page,
 							 @RequestParam("search") Optional<String> search) {
 		return tagRepository.findAll(page);
