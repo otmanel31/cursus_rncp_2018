@@ -6,19 +6,41 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.springframework.boot.autoconfigure.security.oauth2.resource.AuthoritiesExtractor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.loncoto.firstsecurityform.metier.Role;
+import com.loncoto.firstsecurityform.metier.Utilisateur;
+import com.loncoto.firstsecurityform.repositories.IInternalRepository;
+import com.loncoto.firstsecurityform.repositories.InternalRepository;
+import com.loncoto.firstsecurityform.repositories.RoleRepository;
+import com.loncoto.firstsecurityform.repositories.UtilisateurRepository;
 
 @Controller
 @RequestMapping("/")
 public class IndexController {
+	
+	@Autowired
+	private UtilisateurRepository utilisateurRepository;
+	
+	@Autowired
+	private RoleRepository roleRepository;
+	
+	@Autowired
+	private IInternalRepository InternalRepository;
+	
+	
+	@Autowired
+	private PasswordEncoder myPasswordEncoder;
 	
 	@RequestMapping(value="/", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
@@ -77,6 +99,17 @@ public class IndexController {
 		result.put("message", "vous etes sur la page toto");
 		result.put("date", new Date());
 		return result;
+	}
+	
+	@RequestMapping(value="/register", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public Utilisateur register(@RequestParam("username") String username,
+								@RequestParam("password") String password) {
+		//Utilisateur u = new Utilisateur(0, username, myPasswordEncoder.encode(password), true);
+		Role r = roleRepository.findByRoleName("ROLE_USER");
+		Utilisateur u = InternalRepository
+								.createUser(username, myPasswordEncoder.encode(password), r);
+		return u;
 	}
 	
 }

@@ -10,6 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,7 +22,7 @@ import lombok.ToString;
 public class Utilisateur {
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)	private int id;
 	@Column(length=100, nullable=false, unique=true)		private String username;
-	@Column(length=80) 										private String password;
+	@Column(length=80) @JsonIgnore							private String password;
 															private boolean enabled;
 	@ManyToMany 											private Set<Role> roles;
 	

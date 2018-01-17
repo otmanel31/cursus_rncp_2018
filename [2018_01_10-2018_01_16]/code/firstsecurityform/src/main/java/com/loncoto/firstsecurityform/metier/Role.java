@@ -10,6 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,7 +22,7 @@ import lombok.ToString;
 public class Role {
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY) 	private int id;
 	@Column(length=100)										private String roleName;
-	@ManyToMany(mappedBy="roles") 							private Set<Utilisateur> utilisateurs;
+	@ManyToMany(mappedBy="roles") 	 @JsonIgnore			private Set<Utilisateur> utilisateurs;
 	
 	public Set<Utilisateur> getUtilisateurs() {
 		if (utilisateurs == null)
