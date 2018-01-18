@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FileUploader } from "ng2-file-upload";
 import { ImageRepositoryService } from '../../services/image-repository.service';
+import { AuthManagerService } from '../../services/auth-manager.service';
 
 @Component({
   selector: 'app-image-upload',
@@ -12,10 +13,13 @@ export class ImageUploadComponent implements OnInit {
   public uploader: FileUploader;
   public hasBaseDropZoneOver : boolean = false;
 
-  constructor(private imageRepository : ImageRepositoryService) {
+  constructor(private imageRepository : ImageRepositoryService,
+              private authManager : AuthManagerService) {
     this.uploader = new FileUploader({
       autoUpload : true,
-      url: this.imageRepository.getUploadurl()
+      url: this.imageRepository.getUploadurl(),
+      authTokenHeader: 'Authorization',
+      authToken: `Basic ${this.authManager.getCredentials()}`
     });
   }
 
