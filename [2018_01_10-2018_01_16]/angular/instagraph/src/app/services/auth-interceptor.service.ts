@@ -11,7 +11,10 @@ import { Observable } from 'rxjs/Observable';
 import { AuthManagerService } from './auth-manager.service';
 
 import 'rxjs/add/operator/catch';
+import 'rxjs/add/operator/do';
 import 'rxjs/add/observable/throw';
+import 'rxjs/add/observable/empty';
+
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 
@@ -28,7 +31,7 @@ export class AuthInterceptorService implements HttpInterceptor
                                                                 | HttpResponse<any>
                                                                 | HttpUserEvent<any>> {
     // AVANT envoie de la requette au serveur
-    console.log("requette interceptée: " + req.url);
+    // console.log("requette interceptée: " + req.url);
     if (this.authManager.isLoggedIn()) {
       req = req.clone({ setHeaders: {
             Authorization: `Basic ${this.authManager.getCredentials()}`
@@ -46,6 +49,7 @@ export class AuthInterceptorService implements HttpInterceptor
                      this.router.navigateByUrl("/login");
                    }
                  }
+                 // retranmission de l'erreur
                  return Observable.throw(error);
                });
     

@@ -24,6 +24,7 @@ import { TagRepositoryService } from './services/tag-repository.service';
 import { AuthInterceptorService } from "./services/auth-interceptor.service";
 import { LoginComponent } from './components/login/login.component';
 import { AuthManagerService } from './services/auth-manager.service';
+import { UtilisateurInfoComponent } from './components/utilisateur-info/utilisateur-info.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import { AuthManagerService } from './services/auth-manager.service';
     ImageListComponent,
     TagSelectorComponent,
     ImageUploadComponent,
-    LoginComponent
+    LoginComponent,
+    UtilisateurInfoComponent
   ],
   imports: [
     BrowserModule,

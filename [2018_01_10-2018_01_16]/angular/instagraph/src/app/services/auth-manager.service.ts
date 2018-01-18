@@ -8,13 +8,21 @@ import { Observable } from 'rxjs/Observable';
 export class AuthManagerService {
 
   private currentUser : Utilisateur;
-  private utilisateurSubject :  Subject<Utilisateur>;
+  private utilisateurSubject :  Subject<[boolean, Utilisateur]>;
   
   public getCurrentUser() : Utilisateur {
     return this.currentUser;
   }
   public setCurrentUser(utilisateur : Utilisateur) : void {
     this.currentUser = utilisateur;
+    // publication du nouvel utilisateur loggé
+    this.utilisateurSubject.next([true, this.currentUser]);
+  }
+
+  public logOut() : void {
+    this.currentUser = null;
+    // publication du fait qu'il n'y a plus d'utilisateur loggé
+    this.utilisateurSubject.next([false, null]);
   }
 
   public isLoggedIn() : boolean {
@@ -31,10 +39,10 @@ export class AuthManagerService {
  
   constructor() {
     this.currentUser = null;
-    this.utilisateurSubject = new Subject<Utilisateur>();
+    this.utilisateurSubject = new Subject<[boolean, Utilisateur]>();
   }
 
-  public getUtilisateurAsObservable() : Observable<Utilisateur> {
+  public getUtilisateurAsObservable() : Observable<[boolean, Utilisateur]> {
     return this.utilisateurSubject.asObservable();
   }
 

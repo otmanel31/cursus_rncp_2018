@@ -41,7 +41,8 @@ export class TagRepositoryService {
     this._http.get<Page<Tag>>(`${this.baseUrlExtendedApi}/liste`,
                                  {params: urlparams})
               .toPromise()
-              .then( p => this.tagsSubject.next(p));
+              .then( p => this.tagsSubject.next(p))
+              .catch(e => console.log("pas de tag recu"));
    }
 
 }

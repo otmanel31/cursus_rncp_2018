@@ -1,0 +1,18 @@
+exercice
+-----------------
+mettre en place la securité sur l'aaplication mangamania
+	- gestion des comptes utilisateurs
+2 roles
+	ADMIN et CONTRIB et VISITOR
+	ADMIN peut tout faire
+	CONTRIB peut consulter et uploader/cree manga, mais pas effacer
+	VISITOR uniiquement consulter
+	
+bonus 1
+	-> via l'application angular, pouvoir enregistrer
+	un nouvel utilisateurs
+bonus 2 (dur)
+	-> gerer la "propriété" d'un manga
+	c.a.d qu'un manga crée est associé au compte qui l'a creer
+	seul celui-ci ou admin peu ensuite l'editer
+	

@@ -1,0 +1,49 @@
+1) ajouter dans le (pom.xml) starter spring security
+2) creer classe SecurityConfig heritant de WebSecurityConfigurerAdapter
+3) overrider les methodes configure prenant AuthenticationManagerBuilder
+et HttpSecurity
+4) annoter notre classe SecurityConfig avec:
+	@Configuration
+	@EnableWebSecurity
+	@EnableGlobalMethodSecurity(prePostEnable=true)
+5) mettre en place les entite utilisateur et role
+6) activer propertie 
+spring.data.rest.detection-strategy=ANNOTATED
+ pour le scan des repository pour rest
+7) annoter les repository a exposer en rest avec
+	@RepositoryRestResource
+8) creer les CrudRepository correspondant a Role et Utilisateur
+sans les annoter si on ne veut pas les exposer
+9)
+creer le controlle AuthController
+a annoter avec 
+	@Controller
+	@RequestMapping("http://localhost:8080/extendedapi/auth")
+par exemple
+10) 
+	injecter les repository Utilisateur et role
+	avec autowired
+11)
+	mettre en place dans SecurityConfig
+	le bean password Encoder
+	@Bean
+	public PasswordEncoder passwordEncoder() ...
+12) injecter le passwordEncoder dans le AuthController via
+autowired
+13)
+	creer un DatabaseContentInitialiser implementant
+	ApplicationListener et ecoutant le contexte spring
+	y injecter les repository user et role ainsi
+	que le password encoder
+	
+	dans la methode, ceeer les utilisateur et role nécéssaire
+	s'ils n'existent pas
+	
+	ne pas oublie @Service ou component
+14) mettre en palace le UserDetails Service et UserDetails
+encapsulant nos Utilisateur à l'usage de spring security
+15) mettre en place authentification
+via notre userDetailsService dans
+securityConfig
+16) mettre en place le controle
+d'acces via http.authorizerequest

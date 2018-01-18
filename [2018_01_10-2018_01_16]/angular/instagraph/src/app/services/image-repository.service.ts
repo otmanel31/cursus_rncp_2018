@@ -84,7 +84,8 @@ export class ImageRepositoryService {
     this._http.get<Page<Image>>(`${this.baseUrlExtendedApi}/findbytagfull`,
                                  {params: urlparams})
               .toPromise()
-              .then( p => this.imagesSubject.next(p));
+              .then( p => this.imagesSubject.next(p))
+              .catch( e => console.log("pas d'images recus"));
    }
 
    public deleteImages(ids : number[]) : void {
