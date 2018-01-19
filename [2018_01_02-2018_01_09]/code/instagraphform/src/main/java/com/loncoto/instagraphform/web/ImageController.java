@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import javax.servlet.http.HttpSession;
 
@@ -207,12 +209,40 @@ public class ImageController {
 					method=RequestMethod.DELETE,
 					produces=MediaType.APPLICATION_JSON_VALUE)	
 	@ResponseBody
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public Map<String, Object> deleteImages(@RequestParam("imagesId") List<Long> imagesId) {
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
+	public Map<String, Object> deleteImages(
+			@RequestParam("imagesId") List<Long> imagesId,
+			@AuthenticationPrincipal Authentication authentication) {
 		Map<String, Object> result = new HashMap<>();
 		Iterable<Image> images = imageRepository.findAll(imagesId);
+		
+		//----------------------------------- autorisé?
+		final Utilisateur u = utilisateurRepository.findByUsername(authentication.getName());
+		if (!authentication.getAuthorities()
+							.stream()
+							.anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN")))
+		{
+			log.info("not role_admin, test if image owner");
+			final OwnerRepository repo = this.ownerRepository;
+			boolean ok = StreamSupport.stream(images.spliterator(), false)
+						 			.allMatch(img -> repo.exists(new CompositeOwnerKey(img, u)));
+			if (!ok) {
+				throw new HttpClientErrorException(HttpStatus.FORBIDDEN, "can not delete these images");
+			}
+			log.info("delete ok, user is owner of image");
+		}
+		//-----------------------------------------
+		
 		// efface les images dans la base de donnée
-		imageRepository.delete(images);
+		for (Image img : images) {
+			// si l'image a un propriétaire, effacer l'association d'abord
+			//Owner o = ownerRepository.findOne(new CompositeOwnerKey(img, u));
+			List<Owner> os = ownerRepository.findByClef_ImageId(img.getId());
+			if (!os.isEmpty())
+				ownerRepository.delete(os);
+			imageRepository.delete(img);
+		}
+		
 		
 		int nbImageToDelete = 0;
 		int nbFilesDeleted = 0;
