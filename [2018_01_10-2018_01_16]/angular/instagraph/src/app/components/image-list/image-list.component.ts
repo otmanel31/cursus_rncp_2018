@@ -13,6 +13,7 @@ import { Lightbox } from 'angular2-lightbox';
 import { TruncatePipe } from "angular-pipes/src/string/truncate.pipe";
 import { BytesPipe } from "angular-pipes/src/math/bytes.pipe";
 import { AuthManagerService } from '../../services/auth-manager.service';
+import { AlertManagerService } from '../../services/alert-manager.service';
 
 
 
@@ -34,7 +35,8 @@ export class ImageListComponent implements OnInit, OnDestroy {
   constructor(private imageRepository : ImageRepositoryService,
               private modalService : BsModalService,
               private lightBox : Lightbox,
-              private authManager: AuthManagerService) { }
+              private authManager: AuthManagerService,
+              private alertManager: AlertManagerService) { }
 
   public getImageThumbUrl(id: number) : string {
     return this.imageRepository.getImageThumbUrl(id);
@@ -58,7 +60,7 @@ export class ImageListComponent implements OnInit, OnDestroy {
   // ai-je le droit de supprimer ?
   public canDelete() : boolean {
     //console.log("canDelete " + this.authManager.isRoleActive("ROLE_ADMIN"));
-    return this.authManager.isRoleActive("ROLE_ADMIN");
+    return true; // this.authManager.isRoleActive("ROLE_ADMIN");
   }
 
   // affiche le dialogue

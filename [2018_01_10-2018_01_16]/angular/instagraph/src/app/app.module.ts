@@ -9,6 +9,7 @@ import { FileUploadModule } from "ng2-file-upload";
 import { ProgressbarModule } from 'ngx-bootstrap/progressbar';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { PopoverModule } from "ngx-bootstrap/popover";
+import { AlertModule } from "ngx-bootstrap/alert";
 
 import { LightboxModule } from 'angular2-lightbox';
 
@@ -26,6 +27,8 @@ import { LoginComponent } from './components/login/login.component';
 import { AuthManagerService } from './services/auth-manager.service';
 import { UtilisateurInfoComponent } from './components/utilisateur-info/utilisateur-info.component';
 import { RegisterUserComponent } from './components/register-user/register-user.component';
+import { AlertDisplayComponent } from './components/alert-display/alert-display.component';
+import { AlertManagerService } from './services/alert-manager.service';
 
 @NgModule({
   declarations: [
@@ -36,7 +39,8 @@ import { RegisterUserComponent } from './components/register-user/register-user.
     ImageUploadComponent,
     LoginComponent,
     UtilisateurInfoComponent,
-    RegisterUserComponent
+    RegisterUserComponent,
+    AlertDisplayComponent
   ],
   imports: [
     BrowserModule,
@@ -50,6 +54,7 @@ import { RegisterUserComponent } from './components/register-user/register-user.
     ProgressbarModule.forRoot(),
     ModalModule.forRoot(),
     PopoverModule.forRoot(),
+    AlertModule.forRoot(),
     RouterModule.forRoot([
       { path: 'liste', component: ImageListComponent},
       { path: 'upload', component: ImageUploadComponent},
@@ -61,6 +66,7 @@ import { RegisterUserComponent } from './components/register-user/register-user.
   providers: [
     ImageRepositoryService,
     TagRepositoryService,
+    AlertManagerService,
     AuthManagerService,
     {
       provide: HTTP_INTERCEPTORS,

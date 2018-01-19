@@ -9,6 +9,8 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Tag } from '../models/tag';
 import { Subject } from 'rxjs/Subject';
 
+import { AlertManagerService } from './alert-manager.service';
+
 
 @Injectable()
 export class ImageRepositoryService {
@@ -24,7 +26,8 @@ export class ImageRepositoryService {
   private baseUrlApi: string = "http://localhost:8080/api/images";
   private baseUrlExtendedApi : string = "http://localhost:8080/extendedapi/image";
 
-  constructor(private _http: HttpClient) {
+  constructor(private _http: HttpClient,
+              private alertManager : AlertManagerService) {
     // initialisation images
     this.noPage = 0;
     this.taillePage = 12;
@@ -85,7 +88,10 @@ export class ImageRepositoryService {
                                  {params: urlparams})
               .toPromise()
               .then( p => this.imagesSubject.next(p))
-              .catch( e => console.log("pas d'images recus"));
+              .catch( e =>  {
+                console.log("erreur a retransmettre");
+                this.alertManager.handleErrorResponse(e);
+              });
    }
 
    public deleteImages(ids : number[]) : void {
@@ -99,7 +105,10 @@ export class ImageRepositoryService {
                 .toPromise()
                 .then( result => {
                   console.log(result);
+                  this.alertManager.handleMessage("success", "image successfully deleted");
                   this.refreshListe();
+                }, err  => {
+                  this.alertManager.handleErrorResponse(err);
                 });
    }
 
