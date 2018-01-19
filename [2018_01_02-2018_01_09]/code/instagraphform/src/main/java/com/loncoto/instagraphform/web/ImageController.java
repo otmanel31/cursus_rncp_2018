@@ -26,6 +26,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,9 +38,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.loncoto.instagraphform.metier.CompositeOwnerKey;
 import com.loncoto.instagraphform.metier.Image;
+import com.loncoto.instagraphform.metier.Owner;
+import com.loncoto.instagraphform.metier.Utilisateur;
 import com.loncoto.instagraphform.metier.projections.ImageWithTags;
 import com.loncoto.instagraphform.repositories.ImageRepository;
+import com.loncoto.instagraphform.repositories.OwnerRepository;
+import com.loncoto.instagraphform.repositories.UtilisateurRepository;
 import com.loncoto.instagraphform.util.FileStorageManager;
 
 @Controller
@@ -57,6 +64,13 @@ public class ImageController {
 	
 	@Autowired
 	private ImageRepository imageRepository;
+	@Autowired
+	private UtilisateurRepository utilisateurRepository;
+	@Autowired
+	private OwnerRepository ownerRepository;
+	
+	
+	
 	
 	@CrossOrigin(origins="http://localhost:4200")
 	@RequestMapping(value="/findbytag",
@@ -104,7 +118,9 @@ public class ImageController {
 					produces=MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	@PreAuthorize("hasRole('ROLE_USER')")
-	public Image upload(@RequestParam("file") MultipartFile file) {
+	public Image upload(@RequestParam("file") MultipartFile file,
+						@AuthenticationPrincipal Authentication authentication) {
+		log.info("current user: " + authentication.getName());
 		log.info("file name  :" + file.getOriginalFilename());
 		log.info("content type  :" + file.getContentType());
 		try {
@@ -125,6 +141,13 @@ public class ImageController {
 			// le fichier est sauvegardé et img contient le storageId correspondant
 			imageRepository.save(img);
 			// ligne insérée dans la BDD
+			
+			Utilisateur u = utilisateurRepository.findByUsername(authentication.getName());
+			// j'asssocie l'utilisateur comme propriétaire de l'image
+			Owner o = new Owner(new CompositeOwnerKey(img, u));
+			ownerRepository.save(o);
+			//ownerRepository.findOne(arg0)
+			
 			return img;
 		} catch (IOException e) {
 			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR,
