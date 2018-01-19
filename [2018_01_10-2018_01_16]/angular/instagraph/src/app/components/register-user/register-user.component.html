@@ -1,0 +1,21 @@
+<div class="well">
+    <form (ngSubmit)="tryregister()">
+      <div class="form-group">
+        <label for="username">register name</label>
+        <input type="text"
+               class="form-control"
+               name="username"
+               id="username"
+               [(ngModel)]="userregister.username" />
+      </div>
+      <div class="form-group">
+          <label for="password">password</label>
+          <input type="password"
+                 class="form-control"
+                 name="password"
+                 id="password"
+                 [(ngModel)]="userregister.password" />
+        </div>
+      <button class="btn btn-success" type="submit">register me</button>
+  </form>
+</div>

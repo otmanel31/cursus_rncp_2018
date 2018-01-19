@@ -35,6 +35,7 @@ export class LoginComponent implements OnInit, OnDestroy {
               .subscribe( u => {
                 // l'utilisateur nouvellement loggé devient le currentuser
                 //this.authManager.setCurrentUser(u);
+                newuser.roles = u.roles;
                 console.log("je suis bien loggé avec " + u.username);
                 this.router.navigateByUrl("/liste");
             });

@@ -19,6 +19,21 @@ export class AuthManagerService {
     this.utilisateurSubject.next([true, this.currentUser]);
   }
 
+  public isRoleActive(roleName : string) : boolean {
+    //console.log("check role")
+    //console.log(this.currentUser);
+    // si pas d'utilisateur loggé ou aucun role, -> on ne peu pas avoir le role
+    if (this.currentUser == null || this.currentUser.roles == null)
+      return false;
+    if (this.currentUser.roles.findIndex(r => r.roleName == roleName) != -1) {
+      // role présent!
+      return true;
+    }
+    else
+      return false;
+  }
+
+
   public logOut() : void {
     this.currentUser = null;
     // publication du fait qu'il n'y a plus d'utilisateur loggé

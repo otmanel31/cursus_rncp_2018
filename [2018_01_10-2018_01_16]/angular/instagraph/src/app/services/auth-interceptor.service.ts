@@ -52,12 +52,6 @@ export class AuthInterceptorService implements HttpInterceptor
                  // retranmission de l'erreur
                  return Observable.throw(error);
                });
-    
-    /*.pipe( evt => {
-        console.log("traitement reponse");
-        console.log(evt);
-        return evt;
-    });*/
   }
 
 }

@@ -25,6 +25,7 @@ import { AuthInterceptorService } from "./services/auth-interceptor.service";
 import { LoginComponent } from './components/login/login.component';
 import { AuthManagerService } from './services/auth-manager.service';
 import { UtilisateurInfoComponent } from './components/utilisateur-info/utilisateur-info.component';
+import { RegisterUserComponent } from './components/register-user/register-user.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,8 @@ import { UtilisateurInfoComponent } from './components/utilisateur-info/utilisat
     TagSelectorComponent,
     ImageUploadComponent,
     LoginComponent,
-    UtilisateurInfoComponent
+    UtilisateurInfoComponent,
+    RegisterUserComponent
   ],
   imports: [
     BrowserModule,
@@ -52,6 +54,7 @@ import { UtilisateurInfoComponent } from './components/utilisateur-info/utilisat
       { path: 'liste', component: ImageListComponent},
       { path: 'upload', component: ImageUploadComponent},
       { path: 'login', component: LoginComponent},
+      { path: 'register', component: RegisterUserComponent},
       { path: '', redirectTo: '/liste', pathMatch: 'full'}
     ])
   ],

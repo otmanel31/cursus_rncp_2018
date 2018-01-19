@@ -12,6 +12,7 @@ import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { Lightbox } from 'angular2-lightbox';
 import { TruncatePipe } from "angular-pipes/src/string/truncate.pipe";
 import { BytesPipe } from "angular-pipes/src/math/bytes.pipe";
+import { AuthManagerService } from '../../services/auth-manager.service';
 
 
 
@@ -32,7 +33,8 @@ export class ImageListComponent implements OnInit, OnDestroy {
 
   constructor(private imageRepository : ImageRepositoryService,
               private modalService : BsModalService,
-              private lightBox : Lightbox) { }
+              private lightBox : Lightbox,
+              private authManager: AuthManagerService) { }
 
   public getImageThumbUrl(id: number) : string {
     return this.imageRepository.getImageThumbUrl(id);
@@ -51,6 +53,12 @@ export class ImageListComponent implements OnInit, OnDestroy {
 
   public pageChanged(event : any) : void {
     this.imageRepository.setNoPage(event.page - 1);
+  }
+
+  // ai-je le droit de supprimer ?
+  public canDelete() : boolean {
+    //console.log("canDelete " + this.authManager.isRoleActive("ROLE_ADMIN"));
+    return this.authManager.isRoleActive("ROLE_ADMIN");
   }
 
   // affiche le dialogue

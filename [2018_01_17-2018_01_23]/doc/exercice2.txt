@@ -15,4 +15,6 @@ bonus 2 (dur)
 	-> gerer la "propriété" d'un manga
 	c.a.d qu'un manga crée est associé au compte qui l'a creer
 	seul celui-ci ou admin peu ensuite l'editer
-	
+bonus 3 (moyen)
+	-> validation coté back sur certains champs de "manga"
+
