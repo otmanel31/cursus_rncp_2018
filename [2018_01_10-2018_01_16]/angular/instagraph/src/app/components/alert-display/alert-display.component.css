@@ -1,0 +1,7 @@
+.alert-fixed {
+    position: fixed;
+    top: 30 px;
+    right: 20px;
+    width: 33%;
+    z-index: 999;
+}
