@@ -13,6 +13,7 @@ import org.springframework.test.context.junit4.*;
 import com.loncoto.secondJunitSpring.metier.Gazouille;
 import com.loncoto.secondJunitSpring.repositories.GazouilleDaoMock;
 import com.loncoto.secondJunitSpring.services.GazouilleService;
+import com.loncoto.secondJunitSpring.services.GazouilleService.GazouilleNotFoundException;
 
 // utilise notre contexte special test avec le mock DAO
 // s'execute dans un contexte spring
@@ -58,6 +59,36 @@ public class AppGazouilleTest {
 		g = this.gazouilleService.readGazouille(4);
 		assertNotNull("devrait trouver gazouille 4", g);
 	}
+	
+	@Test
+	public void testPublishGazouilleCensure() {
+		String expected = "vive gazouille";
+		this.gazouilleService.publish(new Gazouille(0, "vive twitter", "vive twitter"));
+		Gazouille g = gazouilleService.readGazouille(4);
+		assertEquals("twitter devrait etre remplace par gazouille dans le titre",
+					 expected, g.getTitre());
+		assertEquals("twitter devrait etre remplace par gazouille dans le corps",
+				 expected, g.getCorps());
+	
+	}
+	
+	@Test
+	public void testPublishGazouilleCensureAvance() {
+		String expected = "vive gazouille";
+		this.gazouilleService.publish(new Gazouille(0, "vive Twitter", "vive TWITTER"));
+		Gazouille g = gazouilleService.readGazouille(4);
+		assertEquals("twitter devrait etre remplace par gazouille dans le titre",
+					 expected, g.getTitre());
+		assertEquals("twitter devrait etre remplace par gazouille dans le corps",
+				 expected, g.getCorps());
+	
+	}
+	
+	@Test(expected=GazouilleNotFoundException.class)
+	public void testGazouilleNotFound() {
+		this.gazouilleService.readGazouille(5);
+	}
+	
 	
 }
 

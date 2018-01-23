@@ -15,7 +15,7 @@ public class GazouilleService {
 	private Pattern censorer;
 	
 	public GazouilleService() {
-		censorer = Pattern.compile(CENSORED);
+		censorer = Pattern.compile(CENSORED, Pattern.CASE_INSENSITIVE);
 	}
 
 	@Autowired

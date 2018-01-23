@@ -1,0 +1,91 @@
+Junit -> test unitaire
+
+tester nos composants/classes en isolation
+	-> verification que leurs fonctions/methode
+	réponde correctement en fonction de leurs entrees
+
+en mode projet Maven
+	-> src/main (java, resources...) code applicatif
+	-> src/test (java, resources...) code de test
+
+dans les dependances du pom.xml
+	-> scope (test), cette dependance ne sera utilisé
+	que pour les tests, et ne sera pas packagée avec
+	l'application "finale"
+	
+execution de test junit
+-----------------------
+
+en junit 4, cela passe par une classe annotée avec
+	@Test ou @RunWith(test runner, par exemple spring)
+le testRunner est une classe qui s'occupe d'executer
+les tests. Junit en fournit une par défaut, mais d'autres
+existe pour différents contexte de texte, comme par exemple
+pour les tests en environnement spring
+
+Notre(nos) classe de test va contenir des méthodes annotées
+avec @test, chacune contenant le code vérifiant une ou plusieurs
+des fonctionnalités de la classe testée (service, metier, etc)
+
+ces méthodes execute du code de la classe à tester et vérifie
+les réponses avec des assertions (AssertEquals, etc...)
+si une assertion echoue, une exception est levée signigiant
+à junit que le test en question a échoué
+
+l'ensemble de ces test unitaires joue un role de "filet de
+sécurité", en vérifiant à chaque compilation que le code se
+comporte toujours comme prévu.
+
+	-> ecrire des tests unitaire à un cout non négligeable
+	sur le temps de dev du projet. On parle en général au 
+	maximum	de doublement du temps de developpement
+	Mais l'avantage est très important lors de la maintenance
+	et evolution future du projet. L'avantage est d'autant plus
+	important que le projet et gros et a une longue durée de vie
+	
+une des techniques employée est de faire les tests unitaires
+basique au début, et rajouter ensuite des tests à chaque
+correction de bug (pour verifier une non régréssion).
+
+certaines méthodologies pousse la pratique à l'extreme, comme
+le TDD (test driven development)
+	-> pour toute fonctionnalité, on écrit d'abord
+	les tests et on vérifie qu'ils echouent, et ensuite
+	on ajoute la fonctionnalité qui implémente ce qui
+	est testé
+
+une autre mesure couramment employé sur les projets est
+le "code coverage" ou couverture du code.
+	-> % de code/chemin d'execution couvert par de test unitaire
+
+problématiques liées a la mise en place des tests unitaire
+----------------------------------------------------------
+	on veut tester une classe en isolation. ce que l'on test
+	c'est le fonctionnement d'une classe elle-même, et pas
+	son environnement d'execution ni sa coordination avec
+	d'autres classes
+	Il faut:
+		1) qu'un test soit isolé et reproductible
+		2) que l'on fournisse a notre classe ce dont
+		elle a besoin pour fonctionner
+		solution:
+			fournir des mock/stub -> implementation "bouchonnée"
+			des dependances dont a besoin notre classe
+	exemple, un mock dao, un faut DAO qui réponde ce qu'on
+	veut lors du test de notre classe service
+	
+	on peut, dans l'univers spring, définir une configuration
+	contexte spécial pour les tests, et remplacer alors les
+	veritables dependances par des mocks/stub
+	
+	C'est une tache récurrente et fastidieuse pour les tests
+	unitaire, d'ou l'existence de librairie/framework pour
+	aider/faciliter la création de mock/stub
+	
+	-> Mockito par exemple pour spring
+	
+
+
+
+
+	
