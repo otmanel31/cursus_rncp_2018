@@ -20,7 +20,10 @@ public class GazouilleService {
 
 	@Autowired
 	private GazouilleDao gazouilleDao;
+	public GazouilleDao getGazouilleDao() {return gazouilleDao;}
+	public void setGazouilleDao(GazouilleDao gazouilleDao) {this.gazouilleDao = gazouilleDao;}
 	
+
 	public Gazouille publish(Gazouille gazouille) {
 		// remplacer toute occurence de "twitter" par "gazouille"
 		gazouille.setTitre(censorer.matcher(gazouille.getTitre()).replaceAll("gazouille"));

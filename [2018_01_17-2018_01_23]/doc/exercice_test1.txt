@@ -1,0 +1,26 @@
+exercice test unitaire
+------------------------
+
+un projet spring data jpa
+planning
+	Intervenant (id, nom, email)
+	Intervention(id, lieu, date/heure debut, date/heure fin, noMateriel)
+	
+	relation n-1 Intervention et Intervenant
+	
+	-> 2 dao spring data
+	ecriture un service qui permet de:
+		planifier une nouvelle intervention, en effectuant les controles
+			controle sur les dates
+			controle sur la disponnibilité intervenant, etc...
+			une intervention sur max 4 heures, pas moins de 30 mn
+		consulter le planning mensuel d'un intervenant
+			(liste intervention)
+		consulter les interventions prévue dans le futur
+			sur un materiel
+	ecriture des test unitaire avec l'aide de mockito
+	pour tester ce service
+		
+		
+		
+
