@@ -20,6 +20,8 @@ public class Produit {
 															private double poids;
 															private int stock;
 															private String categorie;
+
+	
 	
 
 }

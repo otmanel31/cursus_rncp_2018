@@ -1,10 +1,15 @@
 package com.loncoto.thirdjunitboot.web;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,8 +50,18 @@ public class ProduitController {
 			method=RequestMethod.POST,
 			produces=MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public Produit saveProduit(@RequestBody Produit produit) {
-		return produitRepository.save(produit);
+	public ResponseEntity<Object> saveProduit(@RequestBody Produit produit) {
+		if (produit.getPrix() < 0)
+			produit.setPrix(0.0);
+		if (produit.getPoids() < 0) {
+			Map<String, Object> result = new HashMap<>();
+			result.put("fieldError", "poids");
+			result.put("errorMessage", "le poids ne peut etre negatif");
+			result.put("entite", produit);
+			return new ResponseEntity<Object>(result, HttpStatus.UNPROCESSABLE_ENTITY);
+		}
+		Produit p = produitRepository.save(produit);
+		return new ResponseEntity<Object>(p, HttpStatus.OK);
 	}
 
 	
