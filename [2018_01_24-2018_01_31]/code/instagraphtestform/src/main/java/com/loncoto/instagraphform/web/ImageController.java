@@ -80,6 +80,7 @@ public class ImageController {
 			log.info("tagsId = " + tagsId.get().toString());
 		else
 			log.info("pas de tags en parametre");
+		log.info("page demandée " + page);
 		return imageRepository.findAll(page);
 	}
 	
@@ -112,9 +113,17 @@ public class ImageController {
 					method=RequestMethod.POST,
 					produces=MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public Image upload(@RequestParam("file") MultipartFile file) {
+	public ResponseEntity<Object> upload(@RequestParam("file") MultipartFile file) {
 		log.info("file name  :" + file.getOriginalFilename());
 		log.info("content type  :" + file.getContentType());
+		if (!file.getContentType().equals(MediaType.IMAGE_JPEG_VALUE) &&
+				!file.getContentType().equals(MediaType.IMAGE_PNG_VALUE))
+		{
+			Map<String , Object> result = new HashMap<>();
+			result.put("errorfield", "contentType");
+			result.put("errormessage", "only jpeg or png supported");
+			return new ResponseEntity<Object>(result, HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+		}
 		try {
 			Image img = new Image(0, 
 				 file.getOriginalFilename(),
@@ -131,10 +140,10 @@ public class ImageController {
 		
 			imageRepository.saveImageFile(img, file.getInputStream());
 			// le fichier est sauvegardé et img contient le storageId correspondant
-			imageRepository.save(img);
+			img = imageRepository.save(img);
 			// ligne insérée dans la BDD
 			
-			return img;
+			return new ResponseEntity<Object>(img, HttpStatus.OK);
 		} catch (IOException e) {
 			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR,
 												"erreur a la sauvegarde");
