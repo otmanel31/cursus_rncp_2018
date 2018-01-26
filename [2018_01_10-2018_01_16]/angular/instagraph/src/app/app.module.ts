@@ -29,6 +29,7 @@ import { UtilisateurInfoComponent } from './components/utilisateur-info/utilisat
 import { RegisterUserComponent } from './components/register-user/register-user.component';
 import { AlertDisplayComponent } from './components/alert-display/alert-display.component';
 import { AlertManagerService } from './services/alert-manager.service';
+import { ImageEditComponent } from './components/image-edit/image-edit.component';
 
 @NgModule({
   declarations: [
@@ -40,7 +41,8 @@ import { AlertManagerService } from './services/alert-manager.service';
     LoginComponent,
     UtilisateurInfoComponent,
     RegisterUserComponent,
-    AlertDisplayComponent
+    AlertDisplayComponent,
+    ImageEditComponent
   ],
   imports: [
     BrowserModule,
@@ -58,6 +60,7 @@ import { AlertManagerService } from './services/alert-manager.service';
     RouterModule.forRoot([
       { path: 'liste', component: ImageListComponent},
       { path: 'upload', component: ImageUploadComponent},
+      { path: 'image/edit/:id', component: ImageEditComponent},
       { path: 'login', component: LoginComponent},
       { path: 'register', component: RegisterUserComponent},
       { path: '', redirectTo: '/liste', pathMatch: 'full'}

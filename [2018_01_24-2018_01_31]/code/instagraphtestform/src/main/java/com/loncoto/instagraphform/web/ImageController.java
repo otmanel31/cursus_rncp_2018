@@ -37,7 +37,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.loncoto.instagraphform.metier.CompositeOwnerKey;
 import com.loncoto.instagraphform.metier.Image;
 import com.loncoto.instagraphform.metier.Utilisateur;
 import com.loncoto.instagraphform.metier.projections.ImageWithTags;
@@ -221,4 +220,41 @@ public class ImageController {
 		return result;
 	}
 	
+	@CrossOrigin(origins="http://localhost:4200")
+	@RequestMapping(value="/findone/{id:[0-9]+}",
+					method=RequestMethod.GET,
+					produces=MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public ResponseEntity<Object> findImageById(@PathVariable("id") long id) {
+		Image img = imageRepository.findOne(id);
+		if (img == null)
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		// je renvoie l'image avec ses tags associés
+		return new ResponseEntity<Object>(
+				projectionFactory.createProjection(ImageWithTags.class, img),
+				HttpStatus.OK);
+	}
+
+	@CrossOrigin(origins="http://localhost:4200")
+	@RequestMapping(value="/saveone/{id:[0-9]+}",
+					method=RequestMethod.PUT,
+					produces=MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public ResponseEntity<Object> saveImageById(
+					@PathVariable("id") long id,
+					@RequestParam("name") String name,
+					@RequestParam("description") String description,
+					@RequestParam("fileName") String fileName) {
+		Image img = imageRepository.findOne(id);
+		if (img == null)
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		
+		img.setName(name);
+		img.setDescription(description);
+		img.setFileName(fileName);
+		
+		img = imageRepository.save(img);
+		return new ResponseEntity<Object>(img, HttpStatus.OK);
+	}
+
 }

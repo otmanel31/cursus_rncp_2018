@@ -59,8 +59,9 @@ export class ImageListComponent implements OnInit, OnDestroy {
 
   // ai-je le droit de supprimer ?
   public canDelete() : boolean {
+    return true;
     //console.log("canDelete " + this.authManager.isRoleActive("ROLE_ADMIN"));
-    return this.authManager.isRoleActive("ROLE_ADMIN") || this.authManager.isRoleActive("ROLE_USER");
+    //return this.authManager.isRoleActive("ROLE_ADMIN") || this.authManager.isRoleActive("ROLE_USER");
   }
 
   // affiche le dialogue

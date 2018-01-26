@@ -17,9 +17,9 @@ export class ImageUploadComponent implements OnInit {
               private authManager : AuthManagerService) {
     this.uploader = new FileUploader({
       autoUpload : true,
-      url: this.imageRepository.getUploadurl(),
+      url: this.imageRepository.getUploadurl() /*,
       authTokenHeader: 'Authorization',
-      authToken: `Basic ${this.authManager.getCredentials()}`
+      authToken: `Basic ${this.authManager.getCredentials()}`*/
     });
   }
 

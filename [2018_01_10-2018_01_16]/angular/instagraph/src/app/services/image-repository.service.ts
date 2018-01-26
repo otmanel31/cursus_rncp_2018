@@ -112,6 +112,21 @@ export class ImageRepositoryService {
                 });
    }
 
+   public findImage(id: number) : Promise<Image> {
+     let url = `${this.baseUrlExtendedApi}/findone/${id}`;
+     return this._http.get<Image>(url).toPromise();
+   }
+
+   public updateImage(image : Image) : Promise<Image> {
+    let urlparams : HttpParams = new HttpParams();
+    urlparams = urlparams.set("name", image.name)
+                         .set("description", image.description)
+                         .set("fileName", image.fileName);
+    let url = `${this.baseUrlExtendedApi}/saveone/${image.id}`;
+    return this._http.put<Image>(url, {}, {params: urlparams})
+               .toPromise();
+   }
+
    public getImageThumbUrl(id: number) : string {
      return `${this.baseUrlExtendedApi}/downloadthumb/${id}`;
    }
