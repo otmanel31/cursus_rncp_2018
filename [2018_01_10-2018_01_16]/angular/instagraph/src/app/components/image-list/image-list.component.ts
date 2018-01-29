@@ -14,6 +14,7 @@ import { TruncatePipe } from "angular-pipes/src/string/truncate.pipe";
 import { BytesPipe } from "angular-pipes/src/math/bytes.pipe";
 import { AuthManagerService } from '../../services/auth-manager.service';
 import { AlertManagerService } from '../../services/alert-manager.service';
+import { Tag } from '../../models/tag';
 
 
 
@@ -96,6 +97,15 @@ export class ImageListComponent implements OnInit, OnDestroy {
                         showImageNumberLabel : true,
                         wrapAround: true
                       });
+  }
+
+  // ajouter tag au filtrage
+  public selectNewTag(tag: Tag) : void {
+    this.imageRepository.addSelectedTag(tag);
+  }
+// ajouter tag au filtrage
+  public unSelectTag(tag: Tag) : void {
+    this.imageRepository.removeSelectedTag(tag);
   }
 
   ngOnInit() {

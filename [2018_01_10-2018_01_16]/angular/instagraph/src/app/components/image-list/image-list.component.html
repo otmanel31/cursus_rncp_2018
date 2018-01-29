@@ -1,6 +1,8 @@
 <div class="row">
   <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-    <app-tag-selector [tagMode]="0"></app-tag-selector>
+    <app-tag-selector [tagMode]="0"
+                      (tagAddChange)="selectNewTag($event)"
+                      (tagRemoveChange)="unSelectTag($event)"></app-tag-selector>
   </div>
   <div class="col-xs-9 col-sm-9 col-md-9 col-lg-9">
     <div class="panel panel-primary">

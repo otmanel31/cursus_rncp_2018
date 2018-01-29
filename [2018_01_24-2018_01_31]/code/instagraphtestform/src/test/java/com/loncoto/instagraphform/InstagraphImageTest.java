@@ -16,6 +16,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.internal.stubbing.answers.Returns;
 import org.mockito.internal.stubbing.answers.ReturnsArgumentAt;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -24,6 +26,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.projection.ProjectionFactory;
+import org.springframework.data.projection.SpelAwareProxyProjectionFactory;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
@@ -32,6 +35,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MockMvcBuilder;
 
 import com.loncoto.instagraphform.metier.Image;
+import com.loncoto.instagraphform.metier.Tag;
 import com.loncoto.instagraphform.metier.projections.ImageWithTags;
 import com.loncoto.instagraphform.repositories.ImageRepository;
 import com.loncoto.instagraphform.repositories.UtilisateurRepository;
@@ -57,7 +61,7 @@ public class InstagraphImageTest {
 	@MockBean
 	private ProjectionFactory projectionFactory;
 	
-	@Autowired
+	
 	private ProjectionFactory realProjectionFactory;
 	
 	// cela contiendra/encapsulera notre controller à tester
@@ -75,7 +79,7 @@ public class InstagraphImageTest {
 		List<Image> content = new ArrayList<>();
 		LocalDateTime ldt = LocalDateTime.of(2018, 1, 10, 10, 30, 0);
 		for (int i = 0; i < page.getPageSize(); i++) {
-			content.add(new Image(start + i + 1,
+			Image img = new Image(start + i + 1,
 					"image no " + (start + i),
 					"une image",
 					ldt,
@@ -85,7 +89,11 @@ public class InstagraphImageTest {
 					1000, 600,
 					"1354654354354354",
 					"879789879879879" + i,
-					"132132132132132" + i));
+					"132132132132132" + i);
+			if (withTags)
+				img.getTags().add(new Tag(1, "tagtest", "un tag de test"));
+				
+			content.add(img);
 			ldt = ldt.plusDays(1);
 		}
 		return new PageImpl<>(content, page, totalCount);
@@ -94,9 +102,7 @@ public class InstagraphImageTest {
 	//-----------------------------------------------
 	@Test
 	public void testListeImage() throws Exception {
-		//	assertTrue(true);
-		// "/extendedapi/image/findbytagfull"
-		
+
 		Pageable pr = new PageRequest(3, 15);
 		when(imageRepository.findAll(pr))
 							.thenReturn(getSampleImagePage(pr, 100, true));
@@ -109,10 +115,48 @@ public class InstagraphImageTest {
 				.andExpect(jsonPath("$.numberOfElements", equalTo(15)))
 				.andExpect(jsonPath("$.content[0].id", equalTo(46)))
 				.andExpect(jsonPath("$.content", hasSize(15)));
+				/*.andExpect(jsonPath("$.content[0].tags[0].libelle", equalTo("tagtest")));*/
 		
 		verify(imageRepository, atLeastOnce()).findAll(pr);
 		
 	}
+	
+	//-----------------------------------------------
+	@Test
+	public void testListeImageFull() throws Exception {
+		
+		// creer notre projection factory
+		realProjectionFactory = new SpelAwareProxyProjectionFactory();
+		
+		Pageable pr = new PageRequest(3, 15);
+		when(imageRepository.findAll(pr))
+							.thenReturn(getSampleImagePage(pr, 100, true));
+		// quand le controller appelera la "fausse" projection factory
+		// nous rapellerons derriere notre propre projection factory
+		when(projectionFactory.createProjection(any(), any()))
+			.thenAnswer(new Answer<Object>() {
+				@Override
+				public Object answer(InvocationOnMock invocation) throws Throwable {
+					return realProjectionFactory.createProjection(
+							(Class)invocation.getArguments()[0],
+							invocation.getArguments()[1]);
+				}
+			});
+		
+		mockMvc.perform(get("/extendedapi/image/findbytagfull")
+				 .param("page", "3")
+				 .param("size", "15"))
+				.andExpect(status().isOk())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+				.andExpect(jsonPath("$.numberOfElements", equalTo(15)))
+				.andExpect(jsonPath("$.content[0].id", equalTo(46)))
+				.andExpect(jsonPath("$.content", hasSize(15)))
+				.andExpect(jsonPath("$.content[0].tags[0].libelle", equalTo("tagtest")));
+		
+		verify(imageRepository, atLeastOnce()).findAll(pr);
+		
+	}
+	
 	
 	@Test
 	public void testUploadImage() throws Exception {

@@ -1,6 +1,9 @@
 <div class="panel panel-primary">
-    <div class="panel-heading">tags choisis</div>
-    <div class="panel-body">
+    <div class="panel-heading">
+      <span *ngIf="tagMode==0">filtrage par tags</span>
+      <span *ngIf="tagMode==1">tags de l'image</span>
+    </div>
+    <div *ngIf="tagMode==0" class="panel-body">
     <li *ngFor="let tag of tagSelected | async"
         class="btn-group btn-group-xs btn-group-justified" role="group">
        <a type="button" class="btn btn-default btn-group">{{tag.libelle | truncate: 10}}</a>
@@ -9,11 +12,33 @@
        </a>
      </li>
     </div>
-</div>
+    <div *ngIf="tagMode==1" class="panel-body">
+        <li *ngFor="let tag of relatedTags"
+            class="btn-group btn-group-xs btn-group-justified" role="group">
+           <a type="button" class="btn btn-default btn-group">{{tag.libelle | truncate: 10}}</a>
+           <a type="button" style="width: .20%;" class="btn btn-default btn-group" (click)="removeFromSelectedTag(tag)">
+             <span class="glyphicon glyphicon-arrow-down"></span>
+           </a>
+         </li>
+        </div>
+    </div>
 <div class="panel panel-primary">
     <div class="panel-heading">tous les tags</div>
     <div class="panel-body">
-   
+        <div class="input-group">
+            <input type="text"
+                  name="searchTerm"
+                  class="form-control"
+                  placeholder="Search..."
+                  [ngModel]="searchTerm"
+                  (ngModelChange)="changeSearch($event)">
+            <span class="input-group-btn">
+              <button class="btn btn-default"
+                      type="button"
+                      (click)="createTag(createTagTemplate)"><span class="glyphicon glyphicon-plus"> </span></button>
+            </span>
+          </div>
+      <br />
      <li *ngFor="let tag of tagSubject | async"
         class="btn-group btn-group-xs btn-group-justified" role="group">
        <a type="button" class="btn btn-default btn-group">{{tag.libelle | truncate: 10}}</a>
@@ -23,3 +48,32 @@
      </li>
     </div>
 </div>
+<ng-template #createTagTemplate>
+    <div class="modal-header">
+      <h4 class="modal-title pull-left">Creation Tag</h4>
+      <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body text-center">
+      <form>
+          <div class="form-group">
+              <label for="name">libelle du tag</label>
+              <input type="text"
+                    class="form-control"
+                    name="libelle"
+                    id="libelle"
+                    [(ngModel)]="createdTag.libelle" />
+            </div>
+            <div class="form-group">
+              <label for="description">description du tag</label>
+              <textarea class="form-control" rows="5" cols="50"
+                    name="description"
+                    id="description"
+                    [(ngModel)]="createdTag.description" >
+              </textarea>
+            </div>
+            <button type="button" class="btn btn-successr" (click)="confirmCreate()" > Sauver </button>
+      </form>
+    </div>
+</ng-template>

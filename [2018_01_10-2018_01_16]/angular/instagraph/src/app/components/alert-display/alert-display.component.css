@@ -5,3 +5,6 @@
     width: 33%;
     z-index: 999;
 }
+.alert-md-item {
+    border: 2px solid black;
+}
