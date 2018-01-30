@@ -6,8 +6,11 @@
     <div *ngIf="tagMode==0" class="panel-body">
     <li *ngFor="let tag of tagSelected | async"
         class="btn-group btn-group-xs btn-group-justified" role="group">
-       <a type="button" class="btn btn-default btn-group">{{tag.libelle | truncate: 10}}</a>
-       <a type="button" style="width: .20%;" class="btn btn-default btn-group" (click)="removeFromSelectedTag(tag)">
+       <a type="button"
+          class="btn btn-default btn-group"
+          [ngClass]="{'positive-tag' : tag[0] , 'negative-tag' : !tag[0]}"
+          (click)="toggleSelectedTag(tag)">{{tag[1].libelle | truncate: 10}}</a>
+       <a type="button" style="width: .20%;" class="btn btn-default btn-group" (click)="removeFromSelectedTag(tag[1])">
          <span class="glyphicon glyphicon-arrow-down"></span>
        </a>
      </li>

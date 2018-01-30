@@ -8,6 +8,15 @@
     <div class="panel panel-primary">
       <div class="panel-heading">liste images</div>
       <div class="panel-body">
+          <div class="text-left col-xs-12 col-sm-12 col-md-12 col-lg-12">
+              <button class="btn btn-sm btn-info" type="button">
+                  Selected <span class="badge">{{selectedImages.length}}</span>
+              </button>
+              <button class="btn btn-sm btn-primary" type="button" (click)="openSelectedGallerie()">
+                  view <span class="glyphicon glyphicon-eye-open"></span>
+              </button>
+
+              </div>
           <div class="text-center col-xs-12 col-sm-12 col-md-12 col-lg-12">
               <pagination [boundaryLinks]="true"
               [totalItems]="totalItems"
@@ -33,9 +42,13 @@
                   <h5> {{image.name | truncate : 18 : '&hellip;' }}</h5>
                   <h5> {{image.fileSize | bytes : 2 }}</h5>
                   <div class="btn-group">
-                    <a type="button"  class="btn btn-sm btn-success">
-                      <span class="glyphicon glyphicon-unchecked"
-                            aria-hidden="true"></span>
+                    <a type="button"
+                       (click)="toggleSelect(image)"
+                       class="btn btn-sm"
+                       [ngClass]="{ 'btn-success' : isSelected(image), 'btn-default' : !isSelected(image)}">
+                      <span class="glyphicon"
+                       [ngClass]="{ 'glyphicon-check' : isSelected(image), 'glyphicon-unchecked' : !isSelected(image)}"
+                       aria-hidden="true"></span>
                     </a>
                     <a type="button"  class="btn btn-sm btn-primary">
                         <span class="glyphicon glyphicon-download-alt"

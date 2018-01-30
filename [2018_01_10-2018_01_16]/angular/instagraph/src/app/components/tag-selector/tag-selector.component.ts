@@ -46,7 +46,7 @@ export class TagSelectorComponent implements OnInit {
   public tagSubscription :  Subscription;
 
   // tags utilisé pour filtrage
-  public tagSelected : Observable<Tag[]>;
+  public tagSelected : Observable<[boolean,Tag][]>;
 
   // sujet pour la recherche
   public searchSubject : Subject<string>;
@@ -75,6 +75,11 @@ export class TagSelectorComponent implements OnInit {
   public removeFromSelectedTag(tag: Tag) : void {
     //this.imageRepository.removeSelectedTag(tag);
     this.tagRemoveChange.emit(tag);
+  }
+
+  public toggleSelectedTag(tag : [boolean, Tag]) : void {
+    tag[0] = !tag[0]; // switch negative/positive
+    this.imageRepository.updateSelectedTag(tag);
   }
 
   public changeSearch(term : string) : void {

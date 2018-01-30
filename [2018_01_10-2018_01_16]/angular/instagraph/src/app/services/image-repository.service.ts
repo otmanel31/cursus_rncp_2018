@@ -20,8 +20,8 @@ export class ImageRepositoryService {
   private noPage : number;
   private taillePage : number;
   // tag selectionnés
-  private selectedTags : Tag[];
-  private selectedTagsSubject : BehaviorSubject<Tag[]>;
+  private selectedTags : [boolean, Tag][];
+  private selectedTagsSubject : BehaviorSubject<[boolean, Tag][]>;
 
   private baseUrlApi: string = "http://localhost:8080/api/images";
   private baseUrlExtendedApi : string = "http://localhost:8080/extendedapi/image";
@@ -38,9 +38,9 @@ export class ImageRepositoryService {
    }
 
    public addSelectedTag(tag : Tag) {
-     if (this.selectedTags.findIndex(t => t.id == tag.id) == -1) {
+     if (this.selectedTags.findIndex(t => t[1].id == tag.id) == -1) {
        // tag non présent, on peut l'ajouter
-       this.selectedTags.push(tag);
+       this.selectedTags.push([true, tag]);
        // je préviens ceux ecoutant la liste des tags selectionnés
        this.selectedTagsSubject.next(this.selectedTags);
        // et je rafraichi la liste des images
@@ -49,7 +49,7 @@ export class ImageRepositoryService {
    }
 
    public removeSelectedTag(tag : Tag) {
-      let index = this.selectedTags.findIndex(t => t.id == tag.id);
+      let index = this.selectedTags.findIndex(t => t[1].id == tag.id);
       if (index != -1) {
         // retrait du tag du tableau (position, nombre)
         this.selectedTags.splice(index, 1);
@@ -58,13 +58,24 @@ export class ImageRepositoryService {
       }
    }
 
+   // permet de modifier le flag inclus/exclus d'un tag déjà séléctionné
+  public updateSelectedTag(tag : [boolean, Tag]) {
+      let index = this.selectedTags.findIndex(t => t[1].id == tag[1].id);
+      if (index != -1) {
+        // retrait du tag du tableau (position, nombre)
+        this.selectedTags[index][0] = tag[0];
+        this.selectedTagsSubject.next(this.selectedTags);
+        this.refreshListe();
+      }
+   }
+   
 
    public setNoPage(noPage : number) : void {
      this.noPage = noPage;
      this.refreshListe();
    }
 
-   public selectedtagsAsObservable() : Observable<Tag[]> {
+   public selectedtagsAsObservable() : Observable<[boolean,Tag][]> {
      return this.selectedTagsSubject.asObservable();
    }
 
@@ -77,12 +88,23 @@ export class ImageRepositoryService {
     // gestion de la pagination
     urlparams = urlparams.set("page", "" + this.noPage);
     // gestion du filtrage par tag
-    if (this.selectedTags.length > 0) {
+    // separation entre tag a inclure et tag a exclure
+    let positiveTags =  this.selectedTags.filter(t => t[0]);
+    let negativeTags =  this.selectedTags.filter(t => !t[0]);
+
+    if (positiveTags.length > 0) {
       // liste de ids de tags séparé par des virgules dans le parametre
       urlparams = urlparams.set("tagsId",
-          this.selectedTags.map(t => "" + t.id).join(",")
+      positiveTags.map(t => "" + t[1].id).join(",")
         );
     }
+    if (negativeTags.length > 0) {
+      // liste de ids de tags séparé par des virgules dans le parametre
+      urlparams = urlparams.set("negativetagsId",
+      negativeTags.map(t => "" + t[1].id).join(",")
+        );
+    }
+    
 
     this._http.get<Page<Image>>(`${this.baseUrlExtendedApi}/findbytagfull`,
                                  {params: urlparams})

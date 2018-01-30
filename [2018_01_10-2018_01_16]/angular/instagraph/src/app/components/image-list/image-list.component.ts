@@ -9,7 +9,7 @@ import { OnDestroy } from '@angular/core/src/metadata/lifecycle_hooks';
 
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
-import { Lightbox } from 'angular2-lightbox';
+import { Lightbox, IAlbum } from 'angular2-lightbox';
 import { TruncatePipe } from "angular-pipes/src/string/truncate.pipe";
 import { BytesPipe } from "angular-pipes/src/math/bytes.pipe";
 import { AuthManagerService } from '../../services/auth-manager.service';
@@ -32,6 +32,7 @@ export class ImageListComponent implements OnInit, OnDestroy {
   public currentPage : number = 1;
   public idToDelete : number = 0;
   public gallerieLiens : any[] = [];
+  public selectedImages : Image[];
 
   constructor(private imageRepository : ImageRepositoryService,
               private modalService : BsModalService,
@@ -108,6 +109,38 @@ export class ImageListComponent implements OnInit, OnDestroy {
     this.imageRepository.removeSelectedTag(tag);
   }
 
+  public isSelected(image: Image) : boolean {
+    return this.selectedImages.findIndex(img => img.id == image.id) != -1;
+  }
+
+  public toggleSelect(image: Image) : void {
+    let index = this.selectedImages.findIndex(img => img.id == image.id);
+    if (index == -1) {
+      // ajouter si non présente
+      this.selectedImages.push(image);
+    }
+    else {
+      // retirer si déjà présente
+      this.selectedImages.splice(index, 1);
+    }
+
+  }
+
+  public openSelectedGallerie() : void {
+    let liens = [];
+    this.selectedImages.forEach(img => {
+      liens.push({id: img.id, src: this.imageRepository.getImageUrl(img.id), caption: img.fileName});
+    })
+    this.lightBox.open(liens,
+                        0,
+                      {
+                        fadeDuration: 0.2,
+                        resizeDuration: 0.2,
+                        showImageNumberLabel : true,
+                        wrapAround: true
+                      });
+  }
+
   ngOnInit() {
     this.images = new Subject();
     this.souscription = this.imageRepository.listeImageAsObservable()
@@ -126,6 +159,8 @@ export class ImageListComponent implements OnInit, OnDestroy {
                               this.totalItems = p.totalElements;
                               this.currentPage = p.number + 1;
                             });
+    // aucune image séléctionnées
+    this.selectedImages = [];
     this.imageRepository.refreshListe();
   }
 

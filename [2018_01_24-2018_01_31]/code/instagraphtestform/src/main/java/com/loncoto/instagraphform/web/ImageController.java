@@ -79,7 +79,7 @@ public class ImageController {
 			@RequestParam("negativetagsId") Optional<List<Integer>> negativetagsId,
 			@PageableDefault(page=0, size=12) Pageable page) {
 		if (tagsId.isPresent() || negativetagsId.isPresent()) {
-			log.info("tagsId = " + tagsId.get().toString());
+			//log.info("tagsId = " + tagsId.get().toString());
 			return imageRepository
 						.searchWithTags(tagsId.orElse(Arrays.asList()),
 										negativetagsId.orElse(Arrays.asList()),
@@ -101,7 +101,7 @@ public class ImageController {
 			@RequestParam("negativetagsId") Optional<List<Integer>> negativetagsId,
 			@PageableDefault(page=0, size=12) Pageable page) {
 		if (tagsId.isPresent() || negativetagsId.isPresent()) {
-			log.info("tagsId = " + tagsId.get().toString());
+			//log.info("tagsId = " + tagsId.get().toString());
 			return imageRepository
 						.searchWithTags(tagsId.orElse(Arrays.asList()),
 										negativetagsId.orElse(Arrays.asList()),
