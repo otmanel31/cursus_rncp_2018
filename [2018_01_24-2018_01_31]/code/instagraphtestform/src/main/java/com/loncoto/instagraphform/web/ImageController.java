@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,9 +76,15 @@ public class ImageController {
 	@ResponseBody
 	public Page<Image> findByTags(
 			@RequestParam("tagsId") Optional<List<Integer>> tagsId,
+			@RequestParam("negativetagsId") Optional<List<Integer>> negativetagsId,
 			@PageableDefault(page=0, size=12) Pageable page) {
-		if (tagsId.isPresent())
+		if (tagsId.isPresent() || negativetagsId.isPresent()) {
 			log.info("tagsId = " + tagsId.get().toString());
+			return imageRepository
+						.searchWithTags(tagsId.orElse(Arrays.asList()),
+										negativetagsId.orElse(Arrays.asList()),
+										page);
+		}
 		else
 			log.info("pas de tags en parametre");
 		log.info("page demandée " + page);
@@ -90,11 +98,14 @@ public class ImageController {
 	@ResponseBody
 	public Page<ImageWithTags> findByTagsFull(
 			@RequestParam("tagsId") Optional<List<Integer>> tagsId,
+			@RequestParam("negativetagsId") Optional<List<Integer>> negativetagsId,
 			@PageableDefault(page=0, size=12) Pageable page) {
-		if (tagsId.isPresent()) {
+		if (tagsId.isPresent() || negativetagsId.isPresent()) {
 			log.info("tagsId = " + tagsId.get().toString());
 			return imageRepository
-						.searchWithTags(tagsId.get(), null, page)
+						.searchWithTags(tagsId.orElse(Arrays.asList()),
+										negativetagsId.orElse(Arrays.asList()),
+										page)
 						.map(img -> projectionFactory.createProjection(ImageWithTags.class, img));
 		}
 		else {

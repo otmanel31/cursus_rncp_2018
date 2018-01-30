@@ -110,14 +110,35 @@ public class ImageRepositoryImpl implements ImageRepositoryCustom {
 			sb.append(sbJoin);
 			sb.append(sbWhere);
 		}
+		if (!excludeTags.isEmpty()) {
+			if (!includedTags.isEmpty())
+				sb.append(" AND ");
+			else
+				sb.append(" WHERE ");
+			sb.append(" NOT EXISTS ( select img2 FROM Image as img2 , IN(img2.tags) te WHERE ");
+			sb.append(" img.id = img2.id AND ( ");
+			for (int position = 1; position <= excludeTags.size(); position++) {
+				if (position > 1)
+					sb.append(" OR ");
+				sb.append("te.id = :te" + position + " ");
+			}
+			sb.append(" ) ) ");
+			
+		}
 		log.info("requette générée : " + sb.toString());
 		// creation de la requette
 		TypedQuery<Image> query = em.createQuery("select img " + sb.toString(), Image.class);
 		TypedQuery<Long> countQuery = em.createQuery("select count(img) " + sb.toString(), Long.class);
 		// passage des parametres à la requette
+		//		tag insclus
 		for (int position = 1; position <= includedTags.size(); position++ ) {
 			query.setParameter("tincid" + position, includedTags.get(position - 1));
 			countQuery.setParameter("tincid" + position, includedTags.get(position - 1));
+		}
+		// 		tag exclus
+		for (int position = 1; position <= excludeTags.size(); position++ ) {
+			query.setParameter("te" + position, excludeTags.get(position - 1));
+			countQuery.setParameter("te" + position, excludeTags.get(position - 1));
 		}
 		
 		// pagination de la requette
