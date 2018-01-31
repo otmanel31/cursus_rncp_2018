@@ -31,6 +31,7 @@ import { RegisterUserComponent } from './components/register-user/register-user.
 import { AlertDisplayComponent } from './components/alert-display/alert-display.component';
 import { AlertManagerService } from './services/alert-manager.service';
 import { ImageEditComponent } from './components/image-edit/image-edit.component';
+import { TexturedCubeComponent } from './components/textured-cube/textured-cube.component';
 
 @NgModule({
   declarations: [
@@ -43,7 +44,8 @@ import { ImageEditComponent } from './components/image-edit/image-edit.component
     UtilisateurInfoComponent,
     RegisterUserComponent,
     AlertDisplayComponent,
-    ImageEditComponent
+    ImageEditComponent,
+    TexturedCubeComponent
   ],
   imports: [
     BrowserModule,

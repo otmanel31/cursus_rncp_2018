@@ -44,4 +44,9 @@
         <img [src]="getImageThumbUrl()" />
       </div>
   </div>
+  <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6" *ngIf="editedImage.id">
+      <app-textured-cube [textureId]="editedImage.id"> 
+        </app-textured-cube>
+  </div>
+
 </div>

@@ -174,6 +174,7 @@ public class ImageController {
 		}
 	}
 	
+	@CrossOrigin(origins="http://localhost:4200")
 	@RequestMapping(value="/download/{id:[0-9]+}", method=RequestMethod.GET)
 	@ResponseBody
 	public ResponseEntity<FileSystemResource> imageData(@PathVariable("id") long id) {
