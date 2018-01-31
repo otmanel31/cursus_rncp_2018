@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -38,7 +39,10 @@ public class TagController {
 					method=RequestMethod.GET,
 					produces=MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public Page<Tag> findAll(@PageableDefault(page=0, size=15) Pageable page,
+	public Page<Tag> findAll(@PageableDefault(page=0,
+											 size=15,
+											 sort={"libelle"},
+											 direction=Direction.ASC) Pageable page,
 							 @RequestParam("search") Optional<String> search) {
 		if (search.isPresent()) {
 			return tagRepository.findByLibelleContaining(search.get(), page);

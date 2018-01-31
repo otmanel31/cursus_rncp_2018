@@ -15,6 +15,7 @@ import { BytesPipe } from "angular-pipes/src/math/bytes.pipe";
 import { AuthManagerService } from '../../services/auth-manager.service';
 import { AlertManagerService } from '../../services/alert-manager.service';
 import { Tag } from '../../models/tag';
+import { TagRepositoryService } from '../../services/tag-repository.service';
 
 
 
@@ -28,13 +29,20 @@ export class ImageListComponent implements OnInit, OnDestroy {
 
   private souscription : Subscription;
   public images : Subject<Image[]>;
+  //pagination
   public totalItems : number = 0;
   public currentPage : number = 1;
-  public idToDelete : number = 0;
+  // gallerie
   public gallerieLiens : any[] = [];
+  // selection
+  public idsToDelete : number[] = [];
   public selectedImages : Image[];
+  public currentPageImages : Image[];
+  public messageDelete : string;
+  public currentTag : Tag;
 
   constructor(private imageRepository : ImageRepositoryService,
+              private tagRepository : TagRepositoryService,
               private modalService : BsModalService,
               private lightBox : Lightbox,
               private authManager: AuthManagerService,
@@ -69,16 +77,57 @@ export class ImageListComponent implements OnInit, OnDestroy {
   // affiche le dialogue
   public deleteImage(id : number, deleteTemplate : TemplateRef<any>) : void {
     console.log("effacement image no " + id + " demandé");
-    this.idToDelete = id; // on memorise l'id de l'image a effacer
+    this.idsToDelete = [id]; // on memorise l'id de l'image a effacer
+    this.messageDelete = "effacer image no " + id; 
     this.modalRef = this.modalService.show(deleteTemplate);
   }
+
+// affiche le dialogue
+public deleteSelectedImages(deleteTemplate : TemplateRef<any>) : void {
+  this.idsToDelete = this.selectedImages.map(img => img.id);
+  this.messageDelete = "effacer image des images " + this.idsToDelete.join(","); 
+  this.modalRef = this.modalService.show(deleteTemplate);
+}
+
 
   // appelé si on clique sur ok dans le dialogue du dessus
   public confirmDelete() : void {
     this.modalRef.hide();
-    console.log("effacement image no " + this.idToDelete + " confirmé");
-    this.imageRepository.deleteImages([this.idToDelete]);
+    //console.log("effacement image no " + this.idToDelete + " confirmé");
+    this.imageRepository.deleteImages(this.idsToDelete);
   }
+
+  public tagImageSelection(tag : Tag, templateRef: TemplateRef<any>) : void {
+    if (this.selectedImages.length == 0) return;
+    console.log("tag selection with " + tag.libelle);
+    this.currentTag = tag;
+    this.modalRef = this.modalService.show(templateRef);
+  }
+  public confirmAddTag() : void {
+    this.modalRef.hide();
+    this.tagRepository.addTags([this.currentTag], this.selectedImages)
+                      .then(tags => {
+                        this.alertManager.handleMessage("success", `${tags[0].libelle} tag added`);
+                        this.imageRepository.refreshListe();
+                      })
+                      .catch( err => {
+                        this.alertManager.handleErrorResponse(err);
+                      });
+  }
+
+  public confirmRemoveTag() : void {
+    this.modalRef.hide();
+    this.tagRepository.removeTags([this.currentTag], this.selectedImages)
+                      .then(tags => {
+                        this.alertManager.handleMessage("success", `${tags[0].libelle} tag removed`);
+                        this.imageRepository.refreshListe();
+                      })
+                      .catch( err => {
+                        this.alertManager.handleErrorResponse(err);
+                      });
+  }
+  
+
 
 
   public openGallerie(image: Image) : void {
@@ -126,6 +175,15 @@ export class ImageListComponent implements OnInit, OnDestroy {
 
   }
 
+  public addCurrentPageToSelection() : void {
+    this.currentPageImages.forEach( img => {
+      if (this.selectedImages.findIndex(img2 => img2.id == img.id) == -1) {
+        this.selectedImages.push(img);
+      }
+    });
+  }
+
+
   public openSelectedGallerie() : void {
     let liens = [];
     this.selectedImages.forEach(img => {
@@ -147,6 +205,7 @@ export class ImageListComponent implements OnInit, OnDestroy {
                             .subscribe(p =>  {
                               // mettre a jour liens pour lightbox
                               this.gallerieLiens = [];
+                              this.currentPageImages = p.content;
                               p.content.forEach(img => {
                                 this.gallerieLiens.push({
                                   id : img.id,
@@ -163,6 +222,10 @@ export class ImageListComponent implements OnInit, OnDestroy {
     this.selectedImages = [];
     this.imageRepository.refreshListe();
   }
+  public clearSelection() {
+    this.selectedImages = [];
+  }
+
 
   ngOnDestroy(): void {
     this.souscription.unsubscribe();

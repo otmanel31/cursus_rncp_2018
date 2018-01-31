@@ -45,7 +45,7 @@ export class TagRepositoryService {
 
    public refreshListe() : void {
     let urlparams : HttpParams = new HttpParams();
-    urlparams = urlparams.set("page", "" + this.noPage);
+    urlparams = urlparams.set("page", "" + this.noPage).set("size", "10");
     // gestion de la recherche de tag
     if (this.searchTerm != null && this.searchTerm.length > 0) {
       urlparams = urlparams.set("search", "" + this.searchTerm);

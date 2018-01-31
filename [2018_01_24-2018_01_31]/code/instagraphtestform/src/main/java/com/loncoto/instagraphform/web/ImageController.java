@@ -40,9 +40,11 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.loncoto.instagraphform.metier.Image;
+import com.loncoto.instagraphform.metier.Tag;
 import com.loncoto.instagraphform.metier.Utilisateur;
 import com.loncoto.instagraphform.metier.projections.ImageWithTags;
 import com.loncoto.instagraphform.repositories.ImageRepository;
+import com.loncoto.instagraphform.repositories.TagRepository;
 import com.loncoto.instagraphform.repositories.UtilisateurRepository;
 import com.loncoto.instagraphform.util.FileStorageManager;
 
@@ -62,6 +64,9 @@ public class ImageController {
 	
 	@Autowired
 	private ImageRepository imageRepository;
+	@Autowired
+	private TagRepository tagRepository;
+	
 	@Autowired
 	private UtilisateurRepository utilisateurRepository;
 	
@@ -123,7 +128,8 @@ public class ImageController {
 					method=RequestMethod.POST,
 					produces=MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public ResponseEntity<Object> upload(@RequestParam("file") MultipartFile file) {
+	public ResponseEntity<Object> upload(@RequestParam("file") MultipartFile file,
+										 @RequestParam("tagIds") Optional<List<Integer>> tagIds) {
 		log.info("file name  :" + file.getOriginalFilename());
 		log.info("content type  :" + file.getContentType());
 		if (!file.getContentType().equals(MediaType.IMAGE_JPEG_VALUE) &&
@@ -150,6 +156,14 @@ public class ImageController {
 		
 			imageRepository.saveImageFile(img, file.getInputStream());
 			// le fichier est sauvegardé et img contient le storageId correspondant
+			
+			if (tagIds.isPresent() && !tagIds.get().isEmpty()) {
+				// j'ai des tags à appliquer
+				List<Tag> tags = new ArrayList<>();
+				tagRepository.findAll(tagIds.get()).forEach(tags::add);
+				img.getTags().addAll(tags);
+			}
+			
 			img = imageRepository.save(img);
 			// ligne insérée dans la BDD
 			

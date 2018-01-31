@@ -1,4 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter, TemplateRef } from '@angular/core';
+import { trigger, state, style, animate, transition } from "@angular/animations";
 import { TagRepositoryService } from '../../services/tag-repository.service';
 import { Tag } from '../../models/tag';
 import { Subject } from 'rxjs/Subject';
@@ -11,11 +12,22 @@ import "rxjs/add/operator/debounceTime";
 import { BsModalService } from 'ngx-bootstrap/modal/bs-modal.service';
 import { AlertManagerService } from '../../services/alert-manager.service';
 
-
 @Component({
   selector: 'app-tag-selector',
   templateUrl: './tag-selector.component.html',
-  styleUrls: ['./tag-selector.component.css']
+  styleUrls: ['./tag-selector.component.css'],
+  animations: [
+    trigger('tagState', [
+      state('positive', style({
+        backgroundColor: '#8bd68b'
+      })),
+      state('negative', style({
+        backgroundColor: 'pink'
+      })),
+      transition('negative => positive', animate('1000ms ease-in')),
+      transition('positive => negative', animate('2000ms ease-out'))
+    ])
+  ]
 })
 export class TagSelectorComponent implements OnInit {
   modalRef: BsModalRef;
@@ -34,6 +46,10 @@ export class TagSelectorComponent implements OnInit {
   public tagAddChange : EventEmitter<Tag> = new EventEmitter<Tag>();
   @Output()
   public tagRemoveChange : EventEmitter<Tag> = new EventEmitter<Tag>();
+  @Output()
+  public tagClick : EventEmitter<Tag> = new EventEmitter<Tag>();
+
+
 
   public searchTerm : string = "";
 
@@ -44,6 +60,10 @@ export class TagSelectorComponent implements OnInit {
 
   public tagSubject : Subject<Tag[]>;
   public tagSubscription :  Subscription;
+
+  // pagination
+  public totalItems : number = 0;
+  public currentPage : number = 1;
 
   // tags utilisé pour filtrage
   public tagSelected : Observable<[boolean,Tag][]>;
@@ -57,6 +77,8 @@ export class TagSelectorComponent implements OnInit {
     this.tagSubscription = this.tagrepository.listetagAsObservable()
                                             .subscribe( p => {
                                               this.tagSubject.next(p.content);
+                                              this.currentPage = p.number + 1;
+                                              this.totalItems = p.totalElements;
                                             });
     this.tagrepository.refreshListe();
     this.tagSelected = this.imageRepository.selectedtagsAsObservable();
@@ -75,6 +97,10 @@ export class TagSelectorComponent implements OnInit {
   public removeFromSelectedTag(tag: Tag) : void {
     //this.imageRepository.removeSelectedTag(tag);
     this.tagRemoveChange.emit(tag);
+  }
+
+  public clickOnTag(tag: Tag) : void {
+    this.tagClick.emit(tag);
   }
 
   public toggleSelectedTag(tag : [boolean, Tag]) : void {
@@ -98,11 +124,23 @@ export class TagSelectorComponent implements OnInit {
     this.tagrepository.createTag(this.createdTag)
                       .then( t => {
                         this.alertManager.handleMessage("success", `tag ${t.libelle} created`);
-                        this.tagrepository.refreshListe();
+                        this.searchTerm = "";
+                        this.searchSubject.next(this.searchTerm);
+                        //this.tagrepository.refreshListe();
                       })
                       .catch (err => {
                         this.alertManager.handleErrorResponse(err);
                       });
   }
-  
+ 
+  public pageChanged(event : any) : void {
+    this.tagrepository.setNoPage(event.page - 1);
+  }
+
+  public getTagState(tag : [boolean, Tag]) : string {
+    if (tag[0] == true)
+      return 'positive';
+    else
+      return 'negative';
+  }
 }
