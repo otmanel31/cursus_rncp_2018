@@ -5,11 +5,14 @@ import { TagRepositoryService } from './tag-repository.service';
 describe('TagRepositoryService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [TagRepositoryService]
+      providers: [TagRepositoryService] // test de service, declaration en provider
     });
   });
 
-  it('should be created', inject([TagRepositoryService], (service: TagRepositoryService) => {
+  // utilisation de la fonction inject, pour verifier si le service est bien injecté
+  it('should be created', inject([TagRepositoryService],
+     (service: TagRepositoryService) => {
     expect(service).toBeTruthy();
   }));
+  
 });
