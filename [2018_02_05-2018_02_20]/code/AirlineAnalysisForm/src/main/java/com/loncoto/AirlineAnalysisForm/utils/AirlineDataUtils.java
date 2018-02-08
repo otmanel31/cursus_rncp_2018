@@ -58,7 +58,7 @@ public class AirlineDataUtils {
 	// selection des champs nous intéréssant
 	public static String[] getSelectedColumnsB(Text ligne) {
 		String[] champsIn = ligne.toString().split(",");
-		String[] champsOut = new String[10];
+		String[] champsOut = new String[12];
 		champsOut[0] = getMonth(champsIn);
 		champsOut[1] = getDepartureTime(champsIn);
 		champsOut[2] = getArrivalTime(champsIn);
