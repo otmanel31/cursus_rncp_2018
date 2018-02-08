@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
@@ -24,54 +25,39 @@ import com.loncoto.AirlineAnalysisForm.utils.AirlineDataUtils;
  * Hello world!
  *
  */
-public class SelectWhereMRjob extends Configured implements Tool
+public class SelectAggregationMRjob extends Configured implements Tool
 {
+
+	public static final IntWritable FLIGHT = new IntWritable(0);
+	public static final IntWritable DEPARTURE_DELAY = new IntWritable(1);
+	public static final IntWritable DEPARTURE_ONTIME = new IntWritable(2);
+	public static final IntWritable ARRIVAL_DELAY = new IntWritable(3);
+	public static final IntWritable ARRIVAL_ONTIME = new IntWritable(4);
+	public static final IntWritable CANDELLED = new IntWritable(5);
+	public static final IntWritable DIVERTED = new IntWritable(6);
 	
 	
-	public static class MyMapper extends Mapper<LongWritable, Text, NullWritable, Text> {
-
-		private int delayInMinutes = 0;
-		private int distanceMin = 0;
-		
-		/*
-		 * 
-		 * ligne de commande exemple
-		 * 
-		 * hadoop jar AirlineAnalysisForm-0.0.1-SNAPSHOT.jar
-		 * 		  com.loncoto.AirlineAnalysisForm.SelectWhereMRjob
-		 * 		  -D map.where.delay=45 
-		 * 	      /user/formation/airlinedata/inputwhere
-		 * 		  /user/formation/airlinedata/outputwhere2
-		 */
-		
-		@Override
-		protected void setup(
-				Mapper<LongWritable, Text, NullWritable, Text>.Context context)
-				throws IOException, InterruptedException {
-			// a l'execution, grace au generic option parser
-			// on peut renseigner ce parametre avec
-			// -D map.where.delay=valeur
-			this.delayInMinutes = context.getConfiguration().getInt("map.where.delay", 1);
-			this.distanceMin =  context.getConfiguration().getInt("map.where.distance", 1);
-		}
-
-
+	public static class MyMapper extends Mapper<LongWritable, Text, Text, IntWritable> {
 
 		@Override
 		protected void map(LongWritable key, Text value,
-				Mapper<LongWritable, Text, NullWritable, Text>.Context context)
+				Mapper<LongWritable, Text, Text, IntWritable>.Context context)
 				throws IOException, InterruptedException {
 			// sauter la ligne d'en-tête
 			if (!AirlineDataUtils.isHeader(value)) {
 				// extrait les champs avec getSelectedColumns
-				String[] values = AirlineDataUtils.getSelectedColumnsA(value);
-				//on verifie pour ne garder que les lignes dont le retard au depart est supérieur à 15
-				if (AirlineDataUtils.parseMinutes(values[8], 0) > this.delayInMinutes &&
-					AirlineDataUtils.parseMinutes(values[5], 0) > this.distanceMin) {
-					StringBuilder sb = AirlineDataUtils.mergeStringArray(values, ",");
-					// on envoie la ligne à la sortie
-					context.write(NullWritable.get(), new Text(sb.toString()));
-				}
+				String[] values = AirlineDataUtils.getSelectedColumnsB(value);
+				
+				String month = values[0];
+				int delayArrival = AirlineDataUtils.parseMinutes(values[9], 0);
+				int delayDeparture = AirlineDataUtils.parseMinutes(values[8], 0);
+				boolean isCancelled = AirlineDataUtils.parseBoolean(values[10], false);
+				boolean isDiverted = AirlineDataUtils.parseBoolean(values[11], false);
+				
+				// compter un vol
+				context.write(new Text(month), FLIGHT);
+				
+				
 			}
 		}
 	}
@@ -79,7 +65,7 @@ public class SelectWhereMRjob extends Configured implements Tool
     public static void main( String[] args ) throws Exception
     {
     	Configuration conf = new Configuration();
-    	ToolRunner.run(new SelectWhereMRjob(), args);
+    	ToolRunner.run(new SelectAggregationMRjob(), args);
     }
 
     // methode de Tool
@@ -89,7 +75,7 @@ public class SelectWhereMRjob extends Configured implements Tool
 		// initialisation du job en récupérant notre configuration
 		Job job = Job.getInstance(getConf());
 		
-		job.setJarByClass(SelectWhereMRjob.class);
+		job.setJarByClass(SelectAggregationMRjob.class);
 		
 		// formlat fichier en entree/sortie
 		job.setInputFormatClass(TextInputFormat.class);
