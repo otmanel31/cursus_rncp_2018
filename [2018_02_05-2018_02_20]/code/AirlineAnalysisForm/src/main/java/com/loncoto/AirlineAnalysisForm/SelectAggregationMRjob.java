@@ -56,8 +56,21 @@ public class SelectAggregationMRjob extends Configured implements Tool
 				
 				// compter un vol
 				context.write(new Text(month), FLIGHT);
-				
-				
+				if (isCancelled) 
+					context.write(new Text(month), CANDELLED);
+				else if (isDiverted)
+					context.write(new Text(month), DIVERTED);
+				else {
+					if (delayArrival >= 10)
+						context.write(new Text(month), ARRIVAL_DELAY);
+					else
+						context.write(new Text(month), ARRIVAL_ONTIME);
+					
+					if (delayDeparture >= 10)
+						context.write(new Text(month), DEPARTURE_DELAY);
+					else
+						context.write(new Text(month), DEPARTURE_ONTIME);
+				}
 			}
 		}
 	}
