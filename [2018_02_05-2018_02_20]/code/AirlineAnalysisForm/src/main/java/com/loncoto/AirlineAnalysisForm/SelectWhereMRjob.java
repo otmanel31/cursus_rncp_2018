@@ -30,6 +30,31 @@ public class SelectWhereMRjob extends Configured implements Tool
 	
 	public static class MyMapper extends Mapper<LongWritable, Text, NullWritable, Text> {
 
+		private int delayInMinutes = 0;
+		
+		/*
+		 * 
+		 * ligne de commande exemple
+		 * 
+		 * hadoop jar AirlineAnalysisForm-0.0.1-SNAPSHOT.jar
+		 * 		  com.loncoto.AirlineAnalysisForm.SelectWhereMRjob
+		 * 		  -D map.where.delay=45 
+		 * 	      /user/formation/airlinedata/inputwhere
+		 * 		  /user/formation/airlinedata/outputwhere2
+		 */
+		
+		@Override
+		protected void setup(
+				Mapper<LongWritable, Text, NullWritable, Text>.Context context)
+				throws IOException, InterruptedException {
+			// a l'execution, grace au generic option parser
+			// on peut renseigner ce parametre avec
+			// -D map.where.delay=valeur
+			this.delayInMinutes = context.getConfiguration().getInt("map.where.delay", 1);
+		}
+
+
+
 		@Override
 		protected void map(LongWritable key, Text value,
 				Mapper<LongWritable, Text, NullWritable, Text>.Context context)
@@ -39,7 +64,7 @@ public class SelectWhereMRjob extends Configured implements Tool
 				// extrait les champs avec getSelectedColumns
 				String[] values = AirlineDataUtils.getSelectedColumnsA(value);
 				//on verifie pour ne garder que les lignes dont le retard au depart est supérieur à 15
-				if (AirlineDataUtils.parseMinutes(values[8], 0) > 15) {
+				if (AirlineDataUtils.parseMinutes(values[8], 0) > this.delayInMinutes) {
 					StringBuilder sb = AirlineDataUtils.mergeStringArray(values, ",");
 					// on envoie la ligne à la sortie
 					context.write(NullWritable.get(), new Text(sb.toString()));
