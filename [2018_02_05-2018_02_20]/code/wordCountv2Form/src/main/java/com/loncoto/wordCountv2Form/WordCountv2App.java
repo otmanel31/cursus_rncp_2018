@@ -30,12 +30,19 @@ public class WordCountv2App
 							Text value,
 							Mapper<LongWritable, Text, Text, IntWritable>.Context context)
 				throws IOException, InterruptedException {
-			String mot = value.toString();
+			String[] mots = value.toString().split("[., !;\"'_\\[\\]{}()-]+");
+			for (String mot : mots) {
+				if (mot.length() > 0) {
+					context.write(new Text(mot), new IntWritable(1));
+				}
+			}
+			
+	/*		String mot = value.toString();
 			if (mot != null && !mot.trim().isEmpty()) {
 				// le context encapsule l'ecrivain et le reporter de l'api V1
 				context.write(new Text(mot.trim()), new IntWritable(1));
 			}
-			
+		*/	
 		}
 		
 	}
