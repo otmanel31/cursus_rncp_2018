@@ -73,6 +73,27 @@ public class AirlineDataUtils {
 		champsOut[11] = getDiverted(champsIn);
 		return champsOut;
 	}
+	
+	// selection des champs nous intéréssant
+	public static String[] getSelectedColumnsC(Text ligne) {
+		String[] champsIn = ligne.toString().split(",");
+		String[] champsOut = new String[13];
+		champsOut[0] = getMonth(champsIn);
+		champsOut[1] = getDepartureTime(champsIn);
+		champsOut[2] = getArrivalTime(champsIn);
+		champsOut[3] = getOrigin(champsIn);
+		champsOut[4] = getDestination(champsIn);
+		champsOut[5] = getDistance(champsIn);
+		champsOut[6] = getElapsedTime(champsIn);
+		champsOut[7] = getScheduledElapsedTime(champsIn);
+		champsOut[8] = getDepartureDelay(champsIn);
+		champsOut[9] = getArrivalDelay(champsIn);
+		champsOut[10] = getCancelled(champsIn);
+		champsOut[11] = getDiverted(champsIn);
+		champsOut[12] = getUniqueCarrier(champsIn);
+		return champsOut;
+	}
+	
 	// construit la date a partir des 3 champs annee, mois et jour 
 	public static String getDate(String[] champs) {
 		StringBuilder sb = new StringBuilder();
