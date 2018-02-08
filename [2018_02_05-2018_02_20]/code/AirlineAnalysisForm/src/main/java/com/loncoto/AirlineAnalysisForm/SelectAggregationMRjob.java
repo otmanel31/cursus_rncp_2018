@@ -150,10 +150,15 @@ public class SelectAggregationMRjob extends Configured implements Tool
 		job.setOutputKeyClass(NullWritable.class);
 		job.setOutputValueClass(Text.class);
 		
-		job.setMapperClass(MyMapper.class);
+		// format de sortie du mapper
+		job.setMapOutputKeyClass(Text.class);
+		job.setMapOutputValueClass(IntWritable.class);
 		
-		// pas de reducteur
-		job.setNumReduceTasks(0);
+		job.setMapperClass(MyMapper.class);
+		job.setReducerClass(MyReducer.class);
+		
+		// un reducteur
+		job.setNumReduceTasks(1);
 		
 		// cette classe permet de mettre dans la configuration les arguments standard connus par hadoop
 		// automatiquement, en nous renvoyant ensuite les autres arguments restants
