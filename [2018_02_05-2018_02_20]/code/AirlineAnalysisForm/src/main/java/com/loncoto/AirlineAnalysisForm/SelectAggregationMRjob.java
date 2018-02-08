@@ -158,7 +158,7 @@ public class SelectAggregationMRjob extends Configured implements Tool
 		job.setReducerClass(MyReducer.class);
 		
 		// un reducteur
-		job.setNumReduceTasks(1);
+		job.setNumReduceTasks(3);
 		
 		// cette classe permet de mettre dans la configuration les arguments standard connus par hadoop
 		// automatiquement, en nous renvoyant ensuite les autres arguments restants

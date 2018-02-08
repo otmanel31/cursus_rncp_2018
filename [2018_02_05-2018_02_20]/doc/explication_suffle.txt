@@ -1,0 +1,39 @@
+map -> suffle/sort -> reducer
+
+"1"  -> getHashCode() -> calcul % 3 -> 0 
+"10" ->								-> 2
+"2"									-> 0
+....
+
+A)etape shuffle choisi comment répartir les clefs entre réducteur
+
+reducteur 0
+("1", dataA) ("2", dataB) ("1", dataC)
+sort
+reduce :("1" -> dataA, dataC, ...)
+reduce :("2" -> dataB)
+
+1ere consequence:
+	cela ne sert a rien d'avoir plus de reducteur que
+	de valeur possible pour les clefs
+	12 mois possibles, 12 reducteur au max
+	que se passe t'il si demande de 15 reducteurs ?
+	3 reducteurs au minimum n'auront rien
+	
+	suivant les traitement après map-reduce que vous souhaitez
+	il faut bien choisir le nombre de réducteur et la clef
+	
+	le choix du nombre de reducteur impacte aussi les performances
+	
+	en general, il y a beaucoup moins de reducteur que
+	de mapper, une bonne partie du gain de performance
+	du map-reduce hadoop tient a la reduction du volume des
+	données en sortie du mapper, car potentiellement ces
+	données seront transmise/streamer via le reseau au noeud
+	du cluster executant le reducteur
+	
+	
+	
+	
+	
+
