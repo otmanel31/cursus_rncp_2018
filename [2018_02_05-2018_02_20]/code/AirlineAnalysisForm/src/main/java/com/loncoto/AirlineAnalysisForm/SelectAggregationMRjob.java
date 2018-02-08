@@ -1,6 +1,7 @@
 package com.loncoto.AirlineAnalysisForm;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
@@ -11,6 +12,7 @@ import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
@@ -73,6 +75,56 @@ public class SelectAggregationMRjob extends Configured implements Tool
 				}
 			}
 		}
+	}
+	
+	// 
+	public static class MyReducer extends Reducer<Text, IntWritable, NullWritable, Text> {
+
+		@Override
+		protected void reduce(Text month, Iterable<IntWritable> codes,
+				Reducer<Text, IntWritable, NullWritable, Text>.Context context)
+				throws IOException, InterruptedException {
+			
+			double  totalFlight = 0;
+			double  totalCancelled = 0;
+			double  totalDiverted = 0;
+			double  totalDepartureOnTime = 0;
+			double  totalArrivalOnTime = 0;
+			double  totalDepartureDelay = 0;
+			double  totalArrivalDelay = 0;
+			
+			
+			for (IntWritable code : codes) {
+				if (code.equals(FLIGHT))
+					totalFlight++;
+				else if (code.equals(CANDELLED))
+					totalCancelled++;
+				else if (code.equals(DIVERTED))
+					totalDiverted++;
+				else if (code.equals(DEPARTURE_ONTIME))
+					totalDepartureOnTime++;
+				else if (code.equals(DEPARTURE_DELAY))
+					totalDepartureDelay++;
+				else if (code.equals(ARRIVAL_ONTIME))
+					totalArrivalOnTime++;
+				else if (code.equals(ARRIVAL_DELAY))
+					totalArrivalDelay++;
+			}
+			
+			StringBuilder sb = new StringBuilder(month.toString());
+			DecimalFormat df = new DecimalFormat("0.0000");
+			
+			sb.append(',').append(totalFlight);
+			sb.append(',').append(df.format(totalCancelled/totalFlight));
+			sb.append(',').append(df.format(totalDiverted/totalFlight));
+			sb.append(',').append(df.format(totalDepartureOnTime/totalFlight));
+			sb.append(',').append(df.format(totalDepartureDelay/totalFlight));
+			sb.append(',').append(df.format(totalArrivalOnTime/totalFlight));
+			sb.append(',').append(df.format(totalArrivalDelay/totalFlight));
+			
+			context.write(NullWritable.get(), new Text(sb.toString()));
+		}
+		
 	}
 	
     public static void main( String[] args ) throws Exception
