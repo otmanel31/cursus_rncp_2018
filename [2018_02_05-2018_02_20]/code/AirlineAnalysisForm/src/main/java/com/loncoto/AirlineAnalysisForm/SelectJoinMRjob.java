@@ -23,6 +23,7 @@ import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 
 import com.loncoto.AirlineAnalysisForm.utils.AirlineDataUtils;
+import com.loncoto.AirlineAnalysisForm.utils.CompagnieCodePartitioner;
 import com.loncoto.AirlineAnalysisForm.utils.CompanyGroupComparator;
 import com.loncoto.AirlineAnalysisForm.utils.CompanySortComparator;
 import com.loncoto.AirlineAnalysisForm.utils.InfosVol;
@@ -89,11 +90,11 @@ public class SelectJoinMRjob extends Configured implements Tool
 			double  totalFlight = 0;
 			double  totalCancelled = 0;
 			double  totalDiverted = 0;
-			double  totalDepartureOnTime = 0;
+			/*double  totalDepartureOnTime = 0;
 			double  totalArrivalOnTime = 0;
 			double  totalDepartureDelay = 0;
 			double  totalArrivalDelay = 0;
-			
+			*/
 			
 			for (Text info : infos) {
 				
@@ -102,23 +103,25 @@ public class SelectJoinMRjob extends Configured implements Tool
 					this.compagnieCourante = info.toString();
 				}
 				else {
-					context.write(NullWritable.get(),
-							new Text("\"" + this.compagnieCourante + "\"," + info.toString()));
+					totalFlight++;
+					InfosVol vol = AirlineDataUtils.TextToVols(info);
+					if (vol.statut.get() == InfosVol.CANCELLED)
+						totalCancelled++;
+					else if (vol.statut.get() == InfosVol.DIVERTED)
+						totalDiverted++;
 				}
 			}
-		/*	
-			StringBuilder sb = new StringBuilder(month.toString());
-			DecimalFormat df = new DecimalFormat("0.0000");
 			
-			sb.append(',').append(totalFlight);
-			sb.append(',').append(df.format(totalCancelled/totalFlight));
-			sb.append(',').append(df.format(totalDiverted/totalFlight));
-			sb.append(',').append(df.format(totalDepartureOnTime/totalFlight));
-			sb.append(',').append(df.format(totalDepartureDelay/totalFlight));
-			sb.append(',').append(df.format(totalArrivalOnTime/totalFlight));
-			sb.append(',').append(df.format(totalArrivalDelay/totalFlight));
-			
-			context.write(NullWritable.get(), new Text(sb.toString()));*/
+			if (totalFlight > 0) {
+				StringBuilder sb = new StringBuilder(this.compagnieCourante);
+				DecimalFormat df = new DecimalFormat("0.0000");
+				
+				sb.append(',').append(totalFlight);
+				sb.append(',').append(df.format(totalCancelled/totalFlight));
+				sb.append(',').append(df.format(totalDiverted/totalFlight));
+				
+				context.write(NullWritable.get(), new Text(sb.toString()));
+			}
 		}
 		
 	}
@@ -164,12 +167,13 @@ public class SelectJoinMRjob extends Configured implements Tool
 		
 		job.setSortComparatorClass(CompanySortComparator.class);
 		job.setGroupingComparatorClass(CompanyGroupComparator.class);
-		
+		job.setPartitionerClass(CompagnieCodePartitioner.class);
 		
 		
 		job.setReducerClass(MyReducer.class);
 		// un reducteur
-		job.setNumReduceTasks(1);
+		job.setNumReduceTasks(3);
+		
 		
 		// true --> verbose
 		boolean status = job.waitForCompletion(true);

@@ -48,7 +48,20 @@ public class AirlineDataUtils {
 		sb.append(vol.statut);
 		return new Text(sb.toString());
 	}
-
+	public static InfosVol TextToVols(Text text) {
+		String[] champs = text.toString().split(",");
+		InfosVol vol = new InfosVol();
+		vol.mois = new IntWritable(AirlineDataUtils.parseMinutes(champs[0], 0));
+		vol.annee = new IntWritable(AirlineDataUtils.parseMinutes(champs[1], 0));
+		vol.date = new IntWritable(AirlineDataUtils.parseMinutes(champs[2], 0));
+		vol.retardDepart = new IntWritable(AirlineDataUtils.parseMinutes(champs[3], 0));
+		vol.retardArrive = new IntWritable(AirlineDataUtils.parseMinutes(champs[4], 0));
+		vol.aeroportDepart = new Text(champs[5]);
+		vol.aeroportArrive = new Text(champs[6]);
+		vol.compagnie = new Text(champs[7]);
+		vol.statut = new IntWritable(AirlineDataUtils.parseMinutes(champs[8], 0));
+		return vol;
+	}
 	
 	
 	// cette fonction détecte si la ligne passée est la ligne aec les intitulés des colonnes
