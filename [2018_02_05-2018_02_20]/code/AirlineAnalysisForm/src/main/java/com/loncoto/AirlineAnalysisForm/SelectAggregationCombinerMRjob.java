@@ -91,6 +91,60 @@ public class SelectAggregationCombinerMRjob extends Configured implements Tool
 	}
 	
 	// 
+	public static class MyCombiner extends Reducer<Text, MapWritable, Text, MapWritable> {
+
+		@Override
+		protected void reduce(Text month, Iterable<MapWritable> codes,
+				Reducer<Text, MapWritable, Text, MapWritable>.Context context)
+				throws IOException, InterruptedException {
+			
+			int  totalFlight = 0;
+			int  totalCancelled = 0;
+			int  totalDiverted = 0;
+			int  totalDepartureOnTime = 0;
+			int  totalArrivalOnTime = 0;
+			int  totalDepartureDelay = 0;
+			int  totalArrivalDelay = 0;
+			
+			
+			for (MapWritable code : codes) {
+				IntWritable type = (IntWritable)code.get(TYPE);
+				IntWritable value = (IntWritable)code.get(VALUE);
+				
+				if (type.equals(FLIGHT))
+					totalFlight += value.get();
+				else if (type.equals(CANDELLED))
+					totalCancelled += value.get();
+				else if (type.equals(DIVERTED))
+					totalDiverted += value.get();
+				else if (type.equals(DEPARTURE_ONTIME))
+					totalDepartureOnTime += value.get();
+				else if (type.equals(DEPARTURE_DELAY))
+					totalDepartureDelay += value.get();
+				else if (type.equals(ARRIVAL_ONTIME))
+					totalArrivalOnTime += value.get();
+				else if (type.equals(ARRIVAL_DELAY))
+					totalArrivalDelay += value.get();
+			}
+		
+			context.write(new Text(month.toString()), getMapWritable(FLIGHT, new IntWritable(totalFlight)));
+			context.write(new Text(month.toString()), getMapWritable(CANDELLED, new IntWritable(totalCancelled)));
+			context.write(new Text(month.toString()), getMapWritable(DIVERTED, new IntWritable(totalDiverted)));
+			context.write(new Text(month.toString()), getMapWritable(DEPARTURE_ONTIME, new IntWritable(totalDepartureOnTime)));
+			context.write(new Text(month.toString()), getMapWritable(DEPARTURE_DELAY, new IntWritable(totalDepartureDelay)));
+			context.write(new Text(month.toString()), getMapWritable(ARRIVAL_ONTIME, new IntWritable(totalArrivalOnTime)));
+			context.write(new Text(month.toString()), getMapWritable(ARRIVAL_DELAY, new IntWritable(totalArrivalDelay)));
+		}
+		// { type : 0, value : 1}  -> compter 1 vol
+		private MapWritable getMapWritable(IntWritable type, IntWritable value) {
+			MapWritable map = new MapWritable();
+			map.put(TYPE, type);
+			map.put(VALUE, value);
+			return map;
+		}
+	}
+	
+	// 
 	public static class MyReducer extends Reducer<Text, IntWritable, NullWritable, Text> {
 
 		@Override
