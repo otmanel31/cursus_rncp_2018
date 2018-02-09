@@ -145,11 +145,11 @@ public class SelectAggregationCombinerMRjob extends Configured implements Tool
 	}
 	
 	// 
-	public static class MyReducer extends Reducer<Text, IntWritable, NullWritable, Text> {
+	public static class MyReducer extends Reducer<Text, MapWritable, NullWritable, Text> {
 
 		@Override
-		protected void reduce(Text month, Iterable<IntWritable> codes,
-				Reducer<Text, IntWritable, NullWritable, Text>.Context context)
+		protected void reduce(Text month, Iterable<MapWritable> codes,
+				Reducer<Text, MapWritable, NullWritable, Text>.Context context)
 				throws IOException, InterruptedException {
 			
 			double  totalFlight = 0;
@@ -161,21 +161,24 @@ public class SelectAggregationCombinerMRjob extends Configured implements Tool
 			double  totalArrivalDelay = 0;
 			
 			
-			for (IntWritable code : codes) {
-				if (code.equals(FLIGHT))
-					totalFlight++;
-				else if (code.equals(CANDELLED))
-					totalCancelled++;
-				else if (code.equals(DIVERTED))
-					totalDiverted++;
-				else if (code.equals(DEPARTURE_ONTIME))
-					totalDepartureOnTime++;
-				else if (code.equals(DEPARTURE_DELAY))
-					totalDepartureDelay++;
-				else if (code.equals(ARRIVAL_ONTIME))
-					totalArrivalOnTime++;
-				else if (code.equals(ARRIVAL_DELAY))
-					totalArrivalDelay++;
+			for (MapWritable code : codes) {
+				IntWritable type = (IntWritable)code.get(TYPE);
+				IntWritable value = (IntWritable)code.get(VALUE);
+				
+				if (type.equals(FLIGHT))
+					totalFlight += value.get();
+				else if (type.equals(CANDELLED))
+					totalCancelled += value.get();
+				else if (type.equals(DIVERTED))
+					totalDiverted += value.get();
+				else if (type.equals(DEPARTURE_ONTIME))
+					totalDepartureOnTime += value.get();
+				else if (type.equals(DEPARTURE_DELAY))
+					totalDepartureDelay += value.get();
+				else if (type.equals(ARRIVAL_ONTIME))
+					totalArrivalOnTime += value.get();
+				else if (type.equals(ARRIVAL_DELAY))
+					totalArrivalDelay += value.get();
 			}
 			
 			StringBuilder sb = new StringBuilder(month.toString());
@@ -219,13 +222,15 @@ public class SelectAggregationCombinerMRjob extends Configured implements Tool
 		
 		// format de sortie du mapper
 		job.setMapOutputKeyClass(Text.class);
-		job.setMapOutputValueClass(IntWritable.class);
+		job.setMapOutputValueClass(MapWritable.class);
 		
 		job.setMapperClass(MyMapper.class);
+		job.setCombinerClass(MyCombiner.class);
 		job.setReducerClass(MyReducer.class);
 		
+		
 		// un reducteur
-		job.setNumReduceTasks(3);
+		job.setNumReduceTasks(1);
 		
 		// cette classe permet de mettre dans la configuration les arguments standard connus par hadoop
 		// automatiquement, en nous renvoyant ensuite les autres arguments restants
