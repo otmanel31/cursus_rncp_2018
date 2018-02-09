@@ -1,9 +1,56 @@
 package com.loncoto.AirlineAnalysisForm.utils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 
 public class AirlineDataUtils {
 
+	public static String[] parseCompanyDetails(Text line) {
+		String[] champs = line.toString().split("\",\"");
+		champs[0] = champs[0].replaceAll("\"", "");
+		champs[1] = champs[1].replaceAll("\"", "");
+		return champs;
+	}
+
+	public static InfosVol parseInfosVolsDelayFromText(Text line) {
+		String champs[] = line.toString().split(",");
+		InfosVol vol = new InfosVol();
+		
+		vol.annee = new IntWritable(Integer.parseInt(getYear(champs)));
+		vol.mois = new IntWritable(Integer.parseInt(getMonth(champs)));
+		vol.date = new IntWritable(Integer.parseInt(champs[2]));
+		vol.aeroportArrive = new Text(getDestination(champs));
+		vol.aeroportDepart = new Text(getOrigin(champs));
+		vol.compagnie = new Text(getUniqueCarrier(champs));
+		vol.retardDepart = new IntWritable(parseMinutes(getDepartureDelay(champs), 0));
+		vol.retardArrive = new IntWritable(parseMinutes(getArrivalDelay(champs), 0));
+		int status = InfosVol.NORMAL;
+		if (parseBoolean(getCancelled(champs), false)) {
+			status = InfosVol.CANCELLED;
+		}
+		else if (parseBoolean(getDiverted(champs), false)) {
+			status = InfosVol.DIVERTED;	
+		}
+		vol.statut = new IntWritable(status);
+		return vol;
+	}
+	
+	public static Text infosVolToText(InfosVol vol) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(vol.mois).append(',');
+		sb.append(vol.annee).append(',');
+		sb.append(vol.date).append(',');
+		sb.append(vol.retardDepart).append(',');
+		sb.append(vol.retardArrive).append(',');
+		sb.append(vol.aeroportDepart).append(',');
+		sb.append(vol.aeroportArrive).append(',');
+		sb.append(vol.compagnie).append(',');
+		sb.append(vol.statut);
+		return new Text(sb.toString());
+	}
+
+	
+	
 	// cette fonction détecte si la ligne passée est la ligne aec les intitulés des colonnes
 	public static boolean isHeader(Text ligne) {
 		String[] champs = ligne.toString().split(",");
