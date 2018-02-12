@@ -18,8 +18,8 @@ public class AirlineDataUtils {
 		String[] champs = line.toString().split("\",\"");
 		if (champs.length == 5) {
 			String[] champs_supp = champs[4].split(",");
-			champs_supp[0].replaceAll("\"", "");
-			champs[0].replaceAll("\"", "");
+			champs_supp[0] = champs_supp[0].replaceAll("\"", "");
+			champs[0] =  champs[0].replaceAll("\"", "");
 			// j'augmente la taille du tableau de 2 cases
 			champs = Arrays.copyOf(champs, 7);
 			champs[4] = champs_supp[0];
@@ -30,7 +30,7 @@ public class AirlineDataUtils {
 			// il y a un probleme avec l'aeroport
 			// on le remplis a peu près pour pouvoir continuer
 			champs = Arrays.copyOf(champs, 7);
-			champs[0].replaceAll("\"", "");
+			champs[0] = champs[0].replaceAll("\"", "");
 		}
 		return champs;
 	}

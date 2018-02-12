@@ -121,6 +121,7 @@ public class SelectJoinMRjobExercice extends Configured implements Tool
 				
 				context.write(NullWritable.get(), new Text(sb.toString()));
 			}
+			this.AeroportCourant = "mars one,0,0";
 		}
 		
 	}
