@@ -1,4 +1,6 @@
 package com.loncoto.AirlineAnalysisForm.utils;
+import java.util.Arrays;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
@@ -12,6 +14,27 @@ public class AirlineDataUtils {
 		return champs;
 	}
 
+	public static String[] parseAeroportDetails(Text line) {
+		String[] champs = line.toString().split("\",\"");
+		if (champs.length == 5) {
+			String[] champs_supp = champs[4].split(",");
+			champs_supp[0].replaceAll("\"", "");
+			champs[0].replaceAll("\"", "");
+			// j'augmente la taille du tableau de 2 cases
+			champs = Arrays.copyOf(champs, 7);
+			champs[4] = champs_supp[0];
+			champs[5] = champs_supp[1];
+			champs[6] = champs_supp[2];
+		}
+		else {
+			// il y a un probleme avec l'aeroport
+			// on le remplis a peu près pour pouvoir continuer
+			champs = Arrays.copyOf(champs, 7);
+			champs[0].replaceAll("\"", "");
+		}
+		return champs;
+	}
+	
 	public static InfosVol parseInfosVolsDelayFromText(Text line) {
 		String champs[] = line.toString().split(",");
 		InfosVol vol = new InfosVol();
@@ -70,6 +93,11 @@ public class AirlineDataUtils {
 		return (champs.length > 0 && champs[0].equalsIgnoreCase("year"));
 	}
 	
+	// cette fonction détecte si la ligne passée est la ligne aec les intitulés des colonnes
+	public static boolean isHeaderAitport(Text ligne) {
+		String[] champs = ligne.toString().split(",");
+		return (champs.length > 0 && champs[0].equalsIgnoreCase("\"iata\""));
+	}
 	
 	// ces deux convertisseurs permettent de gérer les erreurs de conversions
 	// dans ce cas il renvoie la valeur par defaut, par exemple si la valeur est NA(not available)
