@@ -105,6 +105,8 @@ public class SelectJoinMRjobJsonAdvanced extends Configured implements Tool
 				if (clef.type_record.get() == VolAeroportClef.TYPE_AEROPORT) {
 					// j'ai recu un nom de compagnie
 					this.AeroportCourant = info.toString();
+					// j'indique que j'ai rencontré un nouvel aeroport dans le reducteur
+					context.getCounter("AIRPORTS_PROGRESS", "nb_airports").increment(1);
 				}
 				else {
 					totalFlight++;
@@ -115,6 +117,9 @@ public class SelectJoinMRjobJsonAdvanced extends Configured implements Tool
 			}
 			
 			if (totalFlight > 0) {
+				context.getCounter("AIRPORTS_PROGRESS", "nb_vols_" + clef.aeroport_code.toString())
+						.setValue((long)totalFlight);
+
 				StatsVol sv = new StatsVol();
 				sv.codeAeroportDepart.set(clef.aeroport_code.toString());
 				sv.aeroportDepart.set(this.AeroportCourant);
