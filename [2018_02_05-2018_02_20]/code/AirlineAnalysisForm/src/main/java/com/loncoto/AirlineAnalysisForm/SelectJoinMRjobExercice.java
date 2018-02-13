@@ -174,6 +174,7 @@ public class SelectJoinMRjobExercice extends Configured implements Tool
 		job.setNumReduceTasks(3);
 		
 		
+		
 		// true --> verbose
 		boolean status = job.waitForCompletion(true);
 		if (status)
