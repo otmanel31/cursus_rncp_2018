@@ -30,6 +30,7 @@ import com.loncoto.AirlineAnalysisForm.utils.CompagnieCodePartitioner;
 import com.loncoto.AirlineAnalysisForm.utils.CompanyGroupComparator;
 import com.loncoto.AirlineAnalysisForm.utils.CompanySortComparator;
 import com.loncoto.AirlineAnalysisForm.utils.InfosVol;
+import com.loncoto.AirlineAnalysisForm.utils.MyJsonStat2OutputFormat;
 import com.loncoto.AirlineAnalysisForm.utils.MyJsonStatOutputFormat;
 import com.loncoto.AirlineAnalysisForm.utils.StatsVol;
 import com.loncoto.AirlineAnalysisForm.utils.VolAeroportClef;
@@ -146,7 +147,7 @@ public class SelectJoinMRjobJsonAdvanced extends Configured implements Tool
 		
 		// formlat fichier en entree/sortie
 		job.setInputFormatClass(TextInputFormat.class);
-		job.setOutputFormatClass(MyJsonStatOutputFormat.class);
+		job.setOutputFormatClass(MyJsonStat2OutputFormat.class);
 		
 		// format clé/valeur en sortie, ici pas de clé d'ou NullWritable
 		job.setOutputKeyClass(NullWritable.class);
