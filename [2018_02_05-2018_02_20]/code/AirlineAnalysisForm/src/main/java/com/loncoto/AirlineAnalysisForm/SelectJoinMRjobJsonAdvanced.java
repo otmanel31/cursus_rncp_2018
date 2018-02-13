@@ -59,6 +59,7 @@ public class SelectJoinMRjobJsonAdvanced extends Configured implements Tool
 					// telle compagnie aerienne (carrier)
 					VolAeroportClef clef = 
 							new VolAeroportClef(VolAeroportClef.TYPE_VOL, infos.aeroportDepart.toString());
+					context.getCounter("AIRPORTS_PROGRESS", "nb_vols_traite").increment(1);
 					// ecriture vers le reducteur
 					context.write(clef, AirlineDataUtils.infosVolToText(infos));
 				}
@@ -117,8 +118,8 @@ public class SelectJoinMRjobJsonAdvanced extends Configured implements Tool
 			}
 			
 			if (totalFlight > 0) {
-				context.getCounter("AIRPORTS_PROGRESS", "nb_vols_" + clef.aeroport_code.toString())
-						.setValue((long)totalFlight);
+				//context.getCounter("AIRPORTS_PROGRESS", "nb_vols_" + clef.aeroport_code.toString())
+				//		.setValue((long)totalFlight);
 
 				StatsVol sv = new StatsVol();
 				sv.codeAeroportDepart.set(clef.aeroport_code.toString());
