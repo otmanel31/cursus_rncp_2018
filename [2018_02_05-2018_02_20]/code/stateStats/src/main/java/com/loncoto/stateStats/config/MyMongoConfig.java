@@ -8,7 +8,7 @@ import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
 
 @Configuration
-@EnableMongoRepositories
+
 public class MyMongoConfig extends AbstractMongoConfiguration {
 
 	@Override
@@ -20,5 +20,11 @@ public class MyMongoConfig extends AbstractMongoConfiguration {
 	public Mongo mongo() throws Exception {
 		return new MongoClient();
 	}
+
+	/*@Override
+	protected String getMappingBasePackage() {
+		return "com.loncoto.stateStats.repositories";
+	}*/
+	
 	
 }
