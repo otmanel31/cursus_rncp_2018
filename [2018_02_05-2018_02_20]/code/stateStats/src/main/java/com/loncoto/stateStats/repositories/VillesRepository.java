@@ -8,7 +8,7 @@ import org.springframework.data.rest.core.annotation.RestResource;
 
 import com.loncoto.stateStats.metier.Villes;
 
-@EnableMongoRepositories
+
 @RepositoryRestResource(path="villes")
 public interface VillesRepository extends MongoRepository<Villes, String>
 {
