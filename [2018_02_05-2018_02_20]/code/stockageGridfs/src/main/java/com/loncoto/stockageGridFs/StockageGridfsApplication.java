@@ -8,6 +8,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 
+import com.loncoto.stockageGridFs.worker.FileMongoDownloader;
 import com.loncoto.stockageGridFs.worker.FileMongoUploader;
 
 @SpringBootApplication
@@ -33,7 +34,8 @@ public class StockageGridfsApplication implements CommandLineRunner
 			fmu.run();
 		}
 		else if (args.length > 1 && args[0].equalsIgnoreCase("download")) {
-			
+			FileMongoDownloader fmd = new FileMongoDownloader(args[1], this.gridFsTemplate);
+			fmd.run();
 		}
 		else {
 			System.out.println("no directory or command given as arg");
