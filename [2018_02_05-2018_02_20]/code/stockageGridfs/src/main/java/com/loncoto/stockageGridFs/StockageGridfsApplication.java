@@ -21,16 +21,22 @@ public class StockageGridfsApplication implements CommandLineRunner
 	@Autowired
 	private GridFsTemplate gridFsTemplate;
 	
+	// le commande
+	// java -jar programme.jar upload reptoUpload
+	// java -jar programme.jar download reptoDownload
 	@Override
 	public void run(String... args) throws Exception {
 		System.out.println("application stockage started....");
 		System.out.println(Arrays.toString(args));
-		if (args.length > 0) {
-			FileMongoUploader fmu = new FileMongoUploader(args[0], this.gridFsTemplate);
+		if (args.length > 1 && args[0].equalsIgnoreCase("upload")) {
+			FileMongoUploader fmu = new FileMongoUploader(args[1], this.gridFsTemplate);
 			fmu.run();
 		}
+		else if (args.length > 1 && args[0].equalsIgnoreCase("download")) {
+			
+		}
 		else {
-			System.out.println("no directory given as arg");
+			System.out.println("no directory or command given as arg");
 		}
 		
 	}
