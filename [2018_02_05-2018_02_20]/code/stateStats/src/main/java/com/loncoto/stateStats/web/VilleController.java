@@ -15,7 +15,7 @@ import com.loncoto.stateStats.metier.Villes;
 import com.loncoto.stateStats.repositories.VillesRepository;
 
 @Controller
-@RequestMapping("extendedapi/villes")
+@RequestMapping("/extendedapi/villes")
 public class VilleController {
 
 	@Autowired
@@ -23,7 +23,7 @@ public class VilleController {
 	
 	@RequestMapping(value="/searchByPop/{popMin:[0-9]+}",
 					produces= { MediaType.APPLICATION_JSON_VALUE},
-					method=RequestMethod.POST)
+					method=RequestMethod.GET)
 	@ResponseBody
 	public Page<Villes> findWithPop(@PathVariable("popMin") int popMin,
 									@PageableDefault(page=0, size=10) Pageable page) {
