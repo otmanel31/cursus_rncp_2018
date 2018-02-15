@@ -20,10 +20,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.loncoto.instagraphform.metier.Image;
 import com.loncoto.instagraphform.util.FileStorageManager;
+import com.loncoto.instagraphform.util.FileStorageManagerMongo;
 
 import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.resizers.configurations.Antialiasing;
@@ -36,22 +38,27 @@ public class ImageRepositoryImpl implements ImageRepositoryCustom {
 	public static final int THUMB_WIDTH = 164;
 	public static final int THUMB_HEIGHT = 164;
 	
+//	@Autowired
+//	private FileStorageManager fileStorageManager;
 	@Autowired
-	private FileStorageManager fileStorageManager;
+	private FileStorageManagerMongo fileStorageManager;
 	
 	@Override
 	public boolean saveImageFile(Image img, InputStream f) {
 		//-------------------------------------
 		// sauvegarde image originale
 		//----------------------------------
-		String storageId = fileStorageManager.saveNewFile("images", f);
+		String storageId = fileStorageManager.saveNewFile("images",
+															f,
+															img.getFileName(),
+															img.getContentType());
 		img.setStorageId(storageId);
 		//----------------------------------
 		// generation et sauvegarde miniature
 		//----------------------------------
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		try {
-			Thumbnails.of(fileStorageManager.getImageFile(storageId).get())
+			Thumbnails.of(fileStorageManager.getImageFileStream(storageId).get())
 						.size(THUMB_WIDTH, THUMB_HEIGHT)
 						.scalingMode(ScalingMode.BICUBIC)
 						.antialiasing(Antialiasing.ON)
@@ -59,7 +66,9 @@ public class ImageRepositoryImpl implements ImageRepositoryCustom {
 						.toOutputStream(bos);
 			// sauvegarde de la miniature en fichier
 			String thumbStorageId = fileStorageManager.saveNewFile("imagesThumb",
-					new ByteArrayInputStream(bos.toByteArray()));
+					new ByteArrayInputStream(bos.toByteArray()),
+											"thumb_" + img.getFileName(),
+											MediaType.IMAGE_JPEG_VALUE);
 			// mise a jour objet image avec reference thumbnail
 			img.setThumbStorageId(thumbStorageId);
 		} catch (IOException | ArrayIndexOutOfBoundsException e) {
@@ -68,11 +77,16 @@ public class ImageRepositoryImpl implements ImageRepositoryCustom {
 		return true;
 	}
 
-	@Override
+	/*@Override
 	public Optional<File> getImageFile(String storageId) {
 		return fileStorageManager.getImageFile(storageId);
 	}
-
+*/
+	@Override
+	public Optional<InputStream> getImageFile(String storageId) {
+		return this.fileStorageManager.getImageFileStream(storageId);
+	}
+	
 	@Override
 	public boolean deleteImageFile(Image image) {
 		if (image == null)
@@ -148,6 +162,8 @@ public class ImageRepositoryImpl implements ImageRepositoryCustom {
 		// retourne la page
 		return new PageImpl<>(query.getResultList(),pageRequest, countQuery.getSingleResult());
 	}
+
+	
 	
 	
 	

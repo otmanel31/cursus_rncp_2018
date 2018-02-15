@@ -14,7 +14,8 @@ public interface ImageRepositoryCustom {
 	
 	// sauvegarde du fichier uniquement
 	boolean saveImageFile(Image img, InputStream f);
-	Optional<File> getImageFile(String storageId);
+	//Optional<File> getImageFile(String storageId);
+	Optional<InputStream> getImageFile(String storageId);
 	boolean deleteImageFile(Image image);
 	
 	//recherche d'image par tags

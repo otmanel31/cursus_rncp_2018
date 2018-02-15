@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
 
+import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 
@@ -27,8 +29,8 @@ private String storageRep;
 		File rep = new File(this.storageRep);
 		if (rep.exists() && rep.isDirectory()) {
 			Query q = new Query();
-			q = q.limit(10);
-			
+			//q.addCriteria(Criteria.where("_id").is(("")));
+			//this.gridFsTemplate.find(new ObjectId("5434354354"));
 			List<GridFSDBFile> fichiers =  this.gridFsTemplate.find(q);
 			for (GridFSDBFile fichier : fichiers) {
 				System.out.println("téléchargement fichier " + fichier.getFilename() 

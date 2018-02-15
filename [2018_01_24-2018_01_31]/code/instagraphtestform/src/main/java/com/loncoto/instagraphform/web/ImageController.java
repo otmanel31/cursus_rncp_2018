@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,6 +22,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.projection.ProjectionFactory;
@@ -177,12 +179,12 @@ public class ImageController {
 	@CrossOrigin(origins="http://localhost:4200")
 	@RequestMapping(value="/download/{id:[0-9]+}", method=RequestMethod.GET)
 	@ResponseBody
-	public ResponseEntity<FileSystemResource> imageData(@PathVariable("id") long id) {
+	public ResponseEntity<InputStreamResource> imageData(@PathVariable("id") long id) {
 		Image img = imageRepository.findOne(id);
 		if (img == null)
 			throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "image inconnue");
 		// on recupere le fichier correspondant
-		Optional<File> fichier = imageRepository.getImageFile(img.getStorageId());
+		Optional<InputStream> fichier = imageRepository.getImageFile(img.getStorageId());
 		if (!fichier.isPresent())
 			throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "fichier image introuvable");
 		
@@ -190,8 +192,8 @@ public class ImageController {
 		headers.setContentType(MediaType.parseMediaType(img.getContentType()));
 		headers.setContentLength(img.getFileSize());
 		headers.setContentDispositionFormData("attachment", img.getFileName());
-		ResponseEntity<FileSystemResource> re =
-				new ResponseEntity<FileSystemResource>(new FileSystemResource(fichier.get()),
+		ResponseEntity<InputStreamResource> re =
+				new ResponseEntity<InputStreamResource>(new InputStreamResource(fichier.get()),
 													headers,
 													HttpStatus.ACCEPTED);
 		return re;
@@ -199,21 +201,21 @@ public class ImageController {
 	
 	@RequestMapping(value="/downloadthumb/{id:[0-9]+}", method=RequestMethod.GET)
 	@ResponseBody
-	public ResponseEntity<FileSystemResource> imageDataThumb(@PathVariable("id") long id) {
+	public ResponseEntity<InputStreamResource> imageDataThumb(@PathVariable("id") long id) {
 		Image img = imageRepository.findOne(id);
 		if (img == null)
 			throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "image inconnue");
 		// on recupere le fichier correspondant
-		Optional<File> fichier = imageRepository.getImageFile(img.getThumbStorageId());
+		Optional<InputStream> fichier = imageRepository.getImageFile(img.getThumbStorageId());
 		if (!fichier.isPresent())
 			throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "fichier image introuvable");
 		
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.IMAGE_JPEG);
-		headers.setContentLength(fichier.get().length());
+		//headers.setContentLength(fichier.get().length());
 		headers.setContentDispositionFormData("attachment", img.getFileName());
-		ResponseEntity<FileSystemResource> re =
-				new ResponseEntity<FileSystemResource>(new FileSystemResource(fichier.get()),
+		ResponseEntity<InputStreamResource> re =
+				new ResponseEntity<InputStreamResource>(new InputStreamResource(fichier.get()),
 													headers,
 													HttpStatus.ACCEPTED);
 		return re;
